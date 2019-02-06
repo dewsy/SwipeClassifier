@@ -40,7 +40,6 @@ class Dataset {
     return Dataset.fromJson(jsonString);
   }
 
-
   List<String> jsonifyImages() {
     List<String> imagesInString;
     for (Asset asset in this.images) {
@@ -49,7 +48,7 @@ class Dataset {
     return imagesInString;
   }
 
-    String jsonifyOneAsset(Asset asset) {
+  String jsonifyOneAsset(Asset asset) {
     Map<String, dynamic> jsonMap = {
       'identifier': asset.identifier,
       'name': asset.name,
@@ -68,7 +67,7 @@ class Dataset {
       'leftSwipeTag': this.leftSwipeTag,
       'images': jsonifyImages()
     };
-    
+
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(this.name, jsonify(jsonMap));
   }

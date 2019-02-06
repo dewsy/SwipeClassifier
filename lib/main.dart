@@ -1,27 +1,60 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'dart:async';
 
-void main() => runApp(new CameraApp());
+import 'package:flutter/services.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+import 'asset_view.dart';
 
-class CameraApp extends StatefulWidget {
+void main() => runApp(new MyApp());
+
+class MyApp extends StatefulWidget {
   @override
-  _CameraAppState createState() => _CameraAppState();
+  _MyAppState createState() => new _MyAppState();
 }
 
-class _CameraAppState extends State<CameraApp> {
-  File image;
+class _MyAppState extends State<MyApp> {
+  List<Asset> images = List<Asset>();
+  String _error;
 
-//  To use Gallery or File Manager to pick Image
-//  Comment Line No. 19 and uncomment Line number 20
-  picker() async {
-    print('Picker is called');
-    File img = await ImagePicker.pickImage(source: ImageSource.camera);
-//    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
-      image = img;
-      setState(() {});
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Widget buildGridView() {
+    return GridView.count(
+      crossAxisCount: 3,
+      children: List.generate(images.length, (index) {
+        return AssetView(index, images[index]);
+      }),
+    );
+  }
+
+  Future<void> loadAssets() async {
+    setState(() {
+      images = List<Asset>();
+    });
+
+    List<Asset> resultList;
+    String error;
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 300,
+      );
+    } on PlatformException catch (e) {
+      error = e.message;
     }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+      if (error == null) _error = 'No Error Dectected';
+    });
   }
 
   @override
@@ -29,18 +62,19 @@ class _CameraAppState extends State<CameraApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text('Image Picker'),
+          title: const Text('Plugin example app'),
         ),
-        body: new Container(
-          child: new Center(
-            child: image == null
-                ? new Text('No Image to Show ')
-                : new Image.file(image),
-          ),
-        ),
-        floatingActionButton: new FloatingActionButton(
-          onPressed: picker,
-          child: new Icon(Icons.camera_alt),
+        body: Column(
+          children: <Widget>[
+            Center(child: Text('Error: $_error')),
+            RaisedButton(
+              child: Text("Pick images"),
+              onPressed: loadAssets,
+            ),
+            Expanded(
+              child: buildGridView(),
+            )
+          ],
         ),
       ),
     );

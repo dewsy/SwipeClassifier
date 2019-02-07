@@ -11,14 +11,17 @@ class Dataset {
   String leftSwipeTag;
   List<File> images;
 
-  Dataset(String name, rightSName, rightSTag, leftSName, leftSTag, List<File> images) {
-    this.name = name;
-    this.rightSwipeName = rightSName;
-    this.rightSwipeTag = rightSTag;
-    this.leftSwipeName = leftSName;
-    this.leftSwipeTag = leftSTag;
-    this.images = images;
+  Dataset.empty() {
+    this.name = '';
+    this.rightSwipeName = '';
+    this.rightSwipeTag = '';
+    this.leftSwipeName = '';
+    this.leftSwipeTag = '';
+    this.images = List<File>();
   }
+
+  Dataset(this.name, this.rightSwipeName, this.rightSwipeTag, this.leftSwipeName, this.leftSwipeTag, this.images);
+  
 
   Dataset.fromJson(String jsonString) {
     Map<String, dynamic> json = jsonDecode(jsonString);

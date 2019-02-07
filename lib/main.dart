@@ -1,81 +1,63 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:multi_media_picker/multi_media_picker.dart';
+import 'dart:io';
 
-import 'package:flutter/services.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
-import 'asset_view.dart';
+void main() => runApp(MyApp());
 
-void main() => runApp(new MyApp());
-
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
-  _MyAppState createState() => new _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  List<Asset> images = List<Asset>();
-  String _error;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Widget buildGridView() {
-    return GridView.count(
-      crossAxisCount: 3,
-      children: List.generate(images.length, (index) {
-        return AssetView(index, images[index]);
-      }),
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
     );
   }
+}
 
-  Future<void> loadAssets() async {
-    setState(() {
-      images = List<Asset>();
-    });
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-    List<Asset> resultList;
-    String error;
+class _MyHomePageState extends State<MyHomePage> {
+  List<File> _images;
 
-    try {
-      resultList = await MultiImagePicker.pickImages(
-        maxImages: 300,
-      );
-    } on PlatformException catch (e) {
-      error = e.message;
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+  Future getImage() async {
+    var images = await MultiMediaPicker.pickImages(source: ImageSource.gallery);
 
     setState(() {
-      images = resultList;
-      if (error == null) _error = 'No Error Dectected';
+      _images = images;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Column(
-          children: <Widget>[
-            Center(child: Text('Error: $_error')),
-            RaisedButton(
-              child: Text("Pick images"),
-              onPressed: loadAssets,
-            ),
-            Expanded(
-              child: buildGridView(),
-            )
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Picker Example'),
+      ),
+      body: Center(
+        child: _images == null
+            ? Text('No image selected.')
+            : Image.file(_images[0]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: getImage,
+        tooltip: 'Pick Image',
+        child: Icon(Icons.add_a_photo),
       ),
     );
   }

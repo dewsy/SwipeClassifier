@@ -1,7 +1,7 @@
-import 'package:multi_image_picker/asset.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 class Dataset {
   String name;
@@ -9,9 +9,9 @@ class Dataset {
   String rightSwipeTag;
   String leftSwipeName;
   String leftSwipeTag;
-  List<Asset> images;
+  List<File> images;
 
-  Dataset(String name, rightSName, rightSTag, leftSName, leftSTag, List<Asset> images) {
+  Dataset(String name, rightSName, rightSTag, leftSName, leftSTag, List<File> images) {
     this.name = name;
     this.rightSwipeName = rightSName;
     this.rightSwipeTag = rightSTag;
@@ -27,8 +27,8 @@ class Dataset {
     this.rightSwipeTag = json['rightSwipeTag'];
     this.leftSwipeName = json['leftSwipeName'];
     this.leftSwipeTag = json['leftSwipeTag'];
-    for (String item in json['images']) {
-      this.images.add(jsonDecode(item));
+    for (String path in json['images']) {
+      this.images.add(new File(path));
     }
   }
 
@@ -41,20 +41,10 @@ class Dataset {
 
   List<String> jsonifyImages() {
     List<String> imagesInString;
-    for (Asset asset in this.images) {
-      imagesInString.add(jsonifyOneAsset(asset));
+    for (File file in this.images) {
+      imagesInString.add(file.path);
     }
     return imagesInString;
-  }
-
-  String jsonifyOneAsset(Asset asset) {
-    Map<String, dynamic> jsonMap = {
-      'identifier': asset.identifier,
-      'name': asset.name,
-      'originalWidth': asset.originalWidth,
-      'originalHeight': asset.originalHeight,
-    };
-    return jsonify(jsonMap);
   }
 
   Future<void> saveDataset() async {

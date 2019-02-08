@@ -14,10 +14,4 @@ class DatasetBloc {
   final StreamController<String> lTController = StreamController<String>();
 
   final StreamController<String> imagesController = StreamController<String>();
-
-  @override
-  dispose() {
-    nameController.close();
-  }
-
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'newDatasetPage.dart';
+import 'bloc_provider.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -19,7 +20,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.lightGreen,
       ),
-      home: MyHomePage(),
+      home: BlocProvider(
+        bloc: null,
+      child: MyHomePage(),
+      )
     );
   }
 }

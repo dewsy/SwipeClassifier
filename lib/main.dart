@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'newDatasetPage.dart';
-import 'bloc_provider.dart';
+import 'dataset_bloc.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -16,15 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.lightGreen,
-      ),
-      home: BlocProvider(
-        bloc: null,
-      child: MyHomePage(),
-      )
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.lightGreen,
+        ),
+        home: MyHomePage());
   }
 }
 
@@ -50,11 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('//TODO Enter dataset name'),
       ),
-      body: Center(
-        child: _images == null
-            ? Text('No image selected.')
-            : Image.file(_images[0]),
-      ),
+      body: Center(child: Text('datasetName')),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange[200],
         foregroundColor: Colors.white,

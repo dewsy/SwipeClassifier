@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dataset_bloc.dart';
 
 class AddNewDataset extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               decoration: InputDecoration(hintText: "Dateset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               //TODO: Implement stream
-              onSaved: (input) => _dataSetName = input,
+              onSaved: (input) => null,
               controller: controller,
             ),
           ),

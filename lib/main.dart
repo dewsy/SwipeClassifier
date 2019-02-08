@@ -52,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
             : Image.file(_images[0]),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.orange[200],
+        foregroundColor: Colors.white,
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => AddNewDataset()));

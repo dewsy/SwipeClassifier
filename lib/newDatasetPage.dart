@@ -5,12 +5,11 @@ class AddNewDataset extends StatefulWidget {
   _AddNewDatasetState createState() => _AddNewDatasetState();
 }
 
-
-class _AddNewDatasetState extends State<AddNewDataset>{
-  
-  final formKey = GlobalKey<FormState>();
+class _AddNewDatasetState extends State<AddNewDataset> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController controller = TextEditingController();
-  
+  String _dataSetName;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,23 +21,55 @@ class _AddNewDatasetState extends State<AddNewDataset>{
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Dateset name"
-                ),
-                //TODO: Implement stream
-                onChanged: null,
-                controller: controller,
-              ),
-              IconButton(
-                icon: Icon(Icons.photo_size_select_actual),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
+            children: <Widget>[_form()],
           ),
         ),
       ),
     );
+  }
+
+  Widget _form() {
+    return Form(
+      key: _formKey,
+      autovalidate: false,
+      child: Column(
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: TextFormField(
+              decoration: InputDecoration(hintText: "Dateset name"),
+              validator: (input) => input.isEmpty ? 'Required field' : null,
+              //TODO: Implement stream
+              onSaved: (input) => _dataSetName = input,
+              controller: controller,
+            ),
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+            GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Padding(
+                    padding: EdgeInsets.only(right: 150),
+                    child: Text(
+                      'X Cancel',
+                      style: TextStyle(color: Colors.redAccent),
+                    ))),
+            RaisedButton(
+              color: Colors.orange[200],
+              textColor: Colors.white,
+              onPressed: _submit,
+              child: Text('Create Dataset'),
+            ),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  _submit() {
+    if (_formKey.currentState != null) {
+      if (_formKey.currentState.validate()) {
+        _formKey.currentState.save();
+      }
+    }
   }
 }

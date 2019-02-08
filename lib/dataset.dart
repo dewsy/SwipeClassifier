@@ -68,3 +68,7 @@ class Dataset {
     return jsonEncode(toJson);
   }
 }
+
+class DatasetBloc {
+
+}

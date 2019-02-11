@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'bloc.dart';
+import 'dataset.dart';
+
 
 
 class AddNewDataset extends StatefulWidget {
@@ -10,7 +13,9 @@ class AddNewDataset extends StatefulWidget {
 class _AddNewDatasetState extends State<AddNewDataset> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController controller = TextEditingController();
-  String _dataSetName;
+  Dataset newDataset = Dataset.empty();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +36,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   }
 
   Widget _form() {
+
     return Form(
       key: _formKey,
       autovalidate: false,
@@ -42,7 +48,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               decoration: InputDecoration(hintText: "Dateset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               //TODO: Implement stream
-              onSaved: (input) => null,
+              onSaved: (input) => input = newDataset.name,
               controller: controller,
             ),
           ),
@@ -71,6 +77,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
     if (_formKey.currentState != null) {
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
+        Navigator.pop(context, newDataset);
       }
     }
   }

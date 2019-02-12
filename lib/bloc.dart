@@ -1,10 +1,10 @@
 import 'dart:async';
 
 
-class DatasetBloc {
+class Bloc {
 
   final StreamController<String> nameController = StreamController<String>();
-
+ 
   final StreamController<String> rNController = StreamController<String>();
 
   final StreamController<String> rTController = StreamController<String>();

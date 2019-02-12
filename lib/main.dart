@@ -8,7 +8,7 @@ import 'dataset.dart';
 void main() {
   runApp(MaterialApp(
     home: MyApp(),
-    theme: ThemeData(primaryColor: Colors.lightGreen),
+    theme: ThemeData(primaryColor: Colors.lightGreen, accentColor: Colors.lightGreenAccent),
   ));
 }
 

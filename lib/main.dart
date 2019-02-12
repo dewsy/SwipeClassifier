@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:multi_media_picker/multi_media_picker.dart';
 
 import 'newDatasetPage.dart';
 import 'dataset.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: MyApp()));
+    home: MyApp(),
+    theme: ThemeData(primaryColor: Colors.lightGreen),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -25,21 +26,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<File> _images;
   Dataset newDataset = Dataset.empty();
 
-
-  Future getImage() async {
-    var images = await MultiMediaPicker.pickImages(source: ImageSource.gallery);
-
-    setState(() {
-      _images = images;
-    });
-  }
-  
   getNewDateset() async {
-    Dataset temporaryDataset = await Navigator.push(context,
-    MaterialPageRoute(builder: (context) => AddNewDataset()));
+    Dataset temporaryDataset = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AddNewDataset()));
 
     setState(() {
       newDataset = temporaryDataset;
@@ -50,9 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('//TODO Enter dataset name'),
+        title: Text('${_pageTitle()}'),
       ),
-      body: Center(child: Text('${newDataset.name}')),
+      body: Center(child: Text('dataset')),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange[200],
         foregroundColor: Colors.white,
@@ -63,5 +54,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.photo_library),
       ),
     );
+  }
+
+  String _pageTitle() {
+    try {
+      String _name = newDataset.name;
+      return _name;
+    } catch (e) {
+      return 'No dataset selected';
+    }
   }
 }

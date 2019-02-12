@@ -26,21 +26,12 @@ class _AddNewDatasetState extends State<AddNewDataset> {
       appBar: AppBar(
         title: Text("Add new dataset"),
       ),
-      body: Container(
-        margin: const EdgeInsets.all(40.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: ListView(
+        padding: const EdgeInsets.all(40.0),
             children: <Widget>[
-              ListView(
-                shrinkWrap: true,
-                children: <Widget>[_buildChild(), _form()],
+              _buildChild(), _form()],
               )
-            ],
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget _form() {

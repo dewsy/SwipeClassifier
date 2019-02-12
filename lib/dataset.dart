@@ -29,11 +29,9 @@ class Dataset {
     this.rightSwipeTag = json['rightSwipeTag'];
     this.leftSwipeName = json['leftSwipeName'];
     this.leftSwipeTag = json['leftSwipeTag'];
+    this.images = List<File>();
     for (String path in json['images']) {
       this.images.add(new File(path));
     }
-  }
-
-// TODO: move this to a class outside of Dataset
-  
+  }  
 }

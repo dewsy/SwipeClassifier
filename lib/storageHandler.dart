@@ -6,6 +6,16 @@ import 'dart:io';
 
 class StorageHandler {
 
+  Future<void> demoSave() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("demo", "this string comes from SharedPref");
+  }
+
+  Future<String> demoLoad() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("demo");
+  }
+
 
 Future<Dataset> loadDatasetFromStorage(String name) async {
     final prefs = await SharedPreferences.getInstance();
@@ -14,7 +24,7 @@ Future<Dataset> loadDatasetFromStorage(String name) async {
   }
 
   List<String> jsonifyImages(List<File> images) {
-    List<String> imagesInString;
+    List<String> imagesInString = new List<String>();
     for (File file in images) {
       imagesInString.add(file.path);
     }
@@ -38,6 +48,16 @@ Future<Dataset> loadDatasetFromStorage(String name) async {
 
   String jsonify(Map<String, dynamic> toJson) {
     return jsonEncode(toJson);
+  }
+
+  Future<Dataset> loadLatestDataset() async {
+    final prefs = await SharedPreferences.getInstance();
+    String latestName = prefs.getString('activeDataset');
+    if (latestName == null) {
+      return null;
+    } else {
+    return loadDatasetFromStorage(latestName);
+    }
   }
 
 

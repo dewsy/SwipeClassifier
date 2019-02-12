@@ -1,9 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'newDatasetPage.dart';
 import 'dataset.dart';
+import 'storageHandler.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -26,7 +25,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Dataset newDataset = Dataset.empty();
+  Dataset newDataset;
+  String demoString;
 
   getNewDateset() async {
     Dataset temporaryDataset = await Navigator.push(
@@ -34,16 +34,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       newDataset = temporaryDataset;
+      StorageHandler().saveDataset(newDataset);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    newDataset = _getLatestDataset();
+    StorageHandler().demoSave();
+    _getDemoString();
     return Scaffold(
       appBar: AppBar(
         title: Text('${_pageTitle()}'),
       ),
-      body: Center(child: Text('dataset')),
+      body: Center(child: Text('$demoString')),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange[200],
         foregroundColor: Colors.white,
@@ -64,4 +68,26 @@ class _MyHomePageState extends State<MyHomePage> {
       return 'No dataset selected';
     }
   }
-}
+
+  _getLatestDataset() async {
+    try {
+      Dataset dataset = await StorageHandler().loadLatestDataset();
+      if (dataset == null) {
+      return Dataset.empty();
+      } else {
+        return dataset;
+      }
+    } catch(e) {
+      print(e.toString());
+    }
+  }
+
+   Future<String> _getDemoString() async {
+     String n = await StorageHandler().demoLoad();
+
+     setState(() {
+       demoString = n;
+     });
+
+  } 
+  }

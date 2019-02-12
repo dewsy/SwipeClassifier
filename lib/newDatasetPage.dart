@@ -117,8 +117,12 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   _submit() {
     if (_formKey.currentState != null) {
       if (_formKey.currentState.validate()) {
+        if (_images.length != null) {
         _formKey.currentState.save();
         Navigator.pop(context, newDataset);
+        } else {
+          null;
+        }
       }
     }
   }

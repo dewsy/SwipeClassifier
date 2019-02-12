@@ -1,5 +1,3 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -37,35 +35,5 @@ class Dataset {
   }
 
 // TODO: move this to a class outside of Dataset
-  Future<Dataset> loadDatasetFromStorage(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    String jsonString = prefs.getString(name);
-    return Dataset.fromJson(jsonString);
-  }
-
-  List<String> jsonifyImages() {
-    List<String> imagesInString;
-    for (File file in this.images) {
-      imagesInString.add(file.path);
-    }
-    return imagesInString;
-  }
-
-  Future<void> saveDataset() async {
-    Map<String, dynamic> jsonMap = {
-      'name': this.name,
-      'rightSwipeName': this.rightSwipeName,
-      'rightSwipeTag': this.rightSwipeTag,
-      'leftSwipeName': this.leftSwipeName,
-      'leftSwipeTag': this.leftSwipeTag,
-      'images': jsonifyImages()
-    };
-
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(this.name, jsonify(jsonMap));
-  }
-
-  String jsonify(Map<String, dynamic> toJson) {
-    return jsonEncode(toJson);
-  }
+  
 }

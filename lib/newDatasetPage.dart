@@ -23,24 +23,20 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Add new dataset"),
-      ),
-      body: 
-      ScrollConfiguration(
-        behavior: ScrollBehavior(),
-        child: GlowingOverscrollIndicator(
-          axisDirection: AxisDirection.down,
-          color: Colors.lightGreenAccent,
-          child: ListView(
-        padding: const EdgeInsets.all(40.0),
-            children: <Widget>[
-              _buildChild(), _form()],
-              ),
+        appBar: AppBar(
+          title: Text("Add new dataset"),
         ),
-      )
-      
-          );
+        body: ScrollConfiguration(
+          behavior: ScrollBehavior(),
+          child: GlowingOverscrollIndicator(
+            axisDirection: AxisDirection.down,
+            color: Colors.lightGreenAccent,
+            child: ListView(
+              padding: const EdgeInsets.all(40.0),
+              children: <Widget>[_buildChild(), _form()],
+            ),
+          ),
+        ));
   }
 
   Widget _form() {
@@ -130,16 +126,22 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   Widget _buildChild() {
     if (_images != null) {
       return Container(
-        child: Center(
-          heightFactor: 0,
-          child: Column(
-            children: <Widget>[
-              Image.file(_images[0]),
-              Image.file(_images[1]),
-            ],
-          ),
-        ),
-      );
+          width: 50,
+          height: 200,
+          margin: EdgeInsets.only(bottom: 10),
+          child: GridView.count(
+            crossAxisCount: 3,
+            children: List.generate(_previewCount(), (index) {
+              return Container(
+                margin: EdgeInsets.all(5),
+                child:
+              Center(
+                child: Image.file(
+                  _images[index]
+                ),
+              ));
+            }),
+          ));
     } else {
       return IconButton(
         icon: Icon(Icons.add_photo_alternate),
@@ -147,6 +149,11 @@ class _AddNewDatasetState extends State<AddNewDataset> {
         onPressed: getImage,
       );
     }
+  }
+
+  int _previewCount() {
+    int count = _images.length < 9 ? _images.length : 9;
+    return count; 
   }
 
   getImage() async {

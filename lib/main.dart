@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Dataset newDataset;
-  int currentIndex = 0;
+  int currentIndex;
 
   getNewDateset() async {
     Dataset temporaryDataset = await Navigator.push(
@@ -106,6 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 _fileRenamer(thisImage, newDataset.leftSwipeTag);
                 setState(() {
                   currentIndex++;
+                  () async {
+                    await StorageHandler().saveIndex(currentIndex);
+                  };
                 });
               }),
             ),
@@ -129,6 +132,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 _fileRenamer(thisImage, newDataset.rightSwipeTag);
                 setState(() {
                   currentIndex++;
+                  () async {
+                    await StorageHandler().saveIndex(currentIndex);
+                  };
                 });
               }),
             ),
@@ -161,15 +167,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String _pageTitle() {
-    try {
       String _name = newDataset.name;
+      if (_name.length > 0) {
       return _name;
-    } catch (e) {
-      return 'No dataset selected';
-    }
+      } else {
+        return 'Swipe Classifier';
+      }
   }
 
   Future<Dataset> _getLatestDataset() async {
+    currentIndex = await StorageHandler().loadIndex();
     return StorageHandler().loadLatestDataset();
   }
 
@@ -178,17 +185,16 @@ _fileRenamer(File file, String tag) async {
   //TODO: Implement warning for too many dots
   List<String> splitname = file.path.split(".");
   bool result =
-      await SimplePermissions.checkPermission(Permission.WriteExternalStorage);
-  if (!result) {
+      await SimplePermissions.checkPermission(Permission.WriteExternalStorage).then((onValue)async {
+  if (!onValue) {
     PermissionStatus answer = await SimplePermissions.requestPermission(
-        Permission.WriteExternalStorage);
-    if (answer == PermissionStatus.denied) {
+        Permission.WriteExternalStorage).then((onValue) {
+    if (onValue == PermissionStatus.denied) {
       //TODO: handle rejection
     } else {
       file.rename('${splitname[0] + tag + "." + splitname[1]}');
-    }
+    } });
   } else {
     file.rename('${splitname[0] + tag + "." + splitname[1]}');
-  }
-}
+  }});}
 }

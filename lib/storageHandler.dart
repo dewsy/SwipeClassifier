@@ -49,5 +49,21 @@ Future<Dataset> loadDatasetFromStorage(String name) async {
     }
   }
 
+  Future<void> saveIndex(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('index', index);
+
+  }
+
+  Future<int> loadIndex() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int index = prefs.getInt('index');
+    if (index == null) {
+      return 0;
+    } else {
+      return index;
+    }
+  }
+
 
 }

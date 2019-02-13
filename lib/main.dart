@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Row(
           children: <Widget>[
             Container(
-              color: Colors.red,
+             // color: Colors.red,
               width: MediaQuery.of(context).size.width / 2,
               child: DragTarget(builder: (context, candidate, rejected) {
                 return Container(
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
             ),
             Container(
-              color: Colors.blue,
+             // color: Colors.blue,
               width: MediaQuery.of(context).size.width / 2,
               child: DragTarget(builder: (context, candidate, rejected) {
                 return Container(

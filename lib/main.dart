@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'newDatasetPage.dart';
 import 'dataset.dart';
 import 'storageHandler.dart';
+import 'dart:io';
+import 'package:simple_permissions/simple_permissions.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -27,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Dataset newDataset;
+  int currentIndex = 0;
 
   getNewDateset() async {
     Dataset temporaryDataset = await Navigator.push(
@@ -40,6 +43,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Widget _checkForAvailableImages() {
+    if (newDataset.images.isNotEmpty) {
+      return _stack();
+    } else {
+      return Center(child: Text("Add dataset with the button below", style: TextStyle(
+        fontSize: 20
+      ),));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -51,21 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
               appBar: AppBar(
                 title: Text('${_pageTitle()}'),
               ),
-              body: Stack(
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Container(
-              color: Colors.red,
-              width: MediaQuery.of(context).size.width / 2,
-            ),
-            Container(
-              color: Colors.blue,
-              width: MediaQuery.of(context).size.width / 2,
-            ),
-          ],),
-          _cardSwipes()
-          ],),
+              body: _checkForAvailableImages(),
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.orange[200],
                 foregroundColor: Colors.white,
@@ -82,36 +81,84 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  Widget _cardSwipes() {
-    int currentIndex = 0;
-    return
-    Container(
-      alignment: Alignment.center,
-      child: Draggable(
-        //TODO: Implement drag logic
-        onDragCompleted: null,
-        axis: Axis.horizontal,
-          child:Image.file(
-          newDataset.images[currentIndex],
-          height: 500,
-          width: 500,
-          ),
-        feedback: Image.file(
-          newDataset.images[currentIndex],
-          height: 500,
-          width: 500,
+  Widget _stack() {
+    return Stack(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              color: Colors.red,
+              width: MediaQuery.of(context).size.width / 2,
+              child: DragTarget(builder: (context, candidate, rejected) {
+                return Container(
+                  margin: EdgeInsets.only(top: 10, left: 10),
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    newDataset.leftSwipeName,
+                    style: TextStyle(fontSize: 30, color: Colors.grey),
+                  ),
+                );
+              }, onWillAccept: (data) {
+                return true;
+              }, onAccept: (data) {
+                print('Accepted LEFT!');
+                File thisImage = newDataset.images[currentIndex];
+                _fileRenamer(thisImage, newDataset.leftSwipeTag);
+                setState(() {
+                  currentIndex++;
+                });
+              }),
+            ),
+            Container(
+              color: Colors.blue,
+              width: MediaQuery.of(context).size.width / 2,
+              child: DragTarget(builder: (context, candidate, rejected) {
+                return Container(
+                  margin: EdgeInsets.only(top: 10, right: 10),
+                  alignment: Alignment.topRight,
+                  child: Text(
+                    newDataset.rightSwipeName,
+                    style: TextStyle(fontSize: 30, color: Colors.grey),
+                  ),
+                );
+              }, onWillAccept: (data) {
+                return true;
+              }, onAccept: (data) {
+                print('Accepted RIGHT!');
+                File thisImage = newDataset.images[currentIndex];
+                _fileRenamer(thisImage, newDataset.rightSwipeTag);
+                setState(() {
+                  currentIndex++;
+                });
+              }),
+            ),
+          ],
         ),
-        childWhenDragging: Opacity(
-          opacity: 0.5,
-          child:
-        Image.file(
-          newDataset.images[currentIndex + 1],
-          height: 480,
-          width: 480,
-        )),
-      ),
-      );
-      }
+        _cardSwipes(),
+      ],
+    );
+  }
+
+  Widget _cardSwipes() {
+    return Container(
+        alignment: Alignment.center,
+        child: Draggable(
+            axis: Axis.horizontal,
+            child: Image.file(
+              newDataset.images[currentIndex],
+              height: 500,
+              width: 500,
+            ),
+            feedback: Image.file(
+              newDataset.images[currentIndex],
+              height: 500,
+              width: 500,
+            ),
+            childWhenDragging: Container(
+              height: 0,
+              width: 0,
+            )));
+  }
 
   String _pageTitle() {
     try {
@@ -125,4 +172,23 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Dataset> _getLatestDataset() async {
     return StorageHandler().loadLatestDataset();
   }
+
+
+_fileRenamer(File file, String tag) async {
+  //TODO: Implement warning for too many dots
+  List<String> splitname = file.path.split(".");
+  bool result =
+      await SimplePermissions.checkPermission(Permission.WriteExternalStorage);
+  if (!result) {
+    PermissionStatus answer = await SimplePermissions.requestPermission(
+        Permission.WriteExternalStorage);
+    if (answer == PermissionStatus.denied) {
+      //TODO: handle rejection
+    } else {
+      file.rename('${splitname[0] + tag + "." + splitname[1]}');
+    }
+  } else {
+    file.rename('${splitname[0] + tag + "." + splitname[1]}');
+  }
+}
 }

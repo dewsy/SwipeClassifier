@@ -121,7 +121,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
         _formKey.currentState.save();
         Navigator.pop(context, newDataset);
         } else {
-          null;
+          //TODO: alert user about no pictures selected
         }
       }
     }

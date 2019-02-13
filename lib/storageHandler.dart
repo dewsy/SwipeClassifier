@@ -6,17 +6,6 @@ import 'dart:io';
 
 class StorageHandler {
 
-  Future<void> demoSave() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("demo", "this string comes from SharedPref");
-  }
-
-  Future<String> demoLoad() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString("demo");
-  }
-
-
 Future<Dataset> loadDatasetFromStorage(String name) async {
     final prefs = await SharedPreferences.getInstance();
     String jsonString = prefs.getString(name);
@@ -51,7 +40,7 @@ Future<Dataset> loadDatasetFromStorage(String name) async {
   }
 
   Future<Dataset> loadLatestDataset() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String latestName = prefs.getString('activeDataset');
     if (latestName == null) {
       return null;

@@ -7,7 +7,8 @@ import 'storageHandler.dart';
 void main() {
   runApp(MaterialApp(
     home: MyApp(),
-    theme: ThemeData(primaryColor: Colors.lightGreen, accentColor: Colors.lightGreenAccent),
+    theme: ThemeData(
+        primaryColor: Colors.lightGreen, accentColor: Colors.lightGreenAccent),
   ));
 }
 
@@ -26,38 +27,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Dataset newDataset;
-  String demoString;
 
   getNewDateset() async {
     Dataset temporaryDataset = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => AddNewDataset()));
 
     setState(() {
-      newDataset = temporaryDataset;
-      StorageHandler().saveDataset(newDataset);
+      if (temporaryDataset != null) {
+        newDataset = temporaryDataset;
+        StorageHandler().saveDataset(newDataset);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    newDataset = _getLatestDataset();
-    StorageHandler().demoSave();
-    _getDemoString();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('${_pageTitle()}'),
-      ),
-      body: Center(child: Text('$demoString')),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.orange[200],
-        foregroundColor: Colors.white,
-        onPressed: () {
-          getNewDateset();
-        },
-        tooltip: 'Pick Image',
-        child: Icon(Icons.photo_library),
-      ),
-    );
+    return FutureBuilder(
+        future: _getLatestDataset(),
+        builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
+          if (snapshot.hasData) {
+            newDataset = snapshot.data;
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text('${_pageTitle()}'),
+                ),
+                body: Center(child: Text('${_pageTitle()}')),
+                floatingActionButton: FloatingActionButton(
+                  backgroundColor: Colors.orange[200],
+                  foregroundColor: Colors.white,
+                  onPressed: () {
+                    getNewDateset();
+                  },
+                  tooltip: 'Pick Image',
+                  child: Icon(Icons.photo_library),
+                ),
+              );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 
   String _pageTitle() {
@@ -69,25 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  _getLatestDataset() async {
-    try {
-      Dataset dataset = await StorageHandler().loadLatestDataset();
-      if (dataset == null) {
-      return Dataset.empty();
-      } else {
-        return dataset;
-      }
-    } catch(e) {
-      print(e.toString());
-    }
+  Future<Dataset> _getLatestDataset() async {
+    return StorageHandler().loadLatestDataset();
   }
-
-   Future<String> _getDemoString() async {
-     String n = await StorageHandler().demoLoad();
-
-     setState(() {
-       demoString = n;
-     });
-
-  } 
-  }
+}

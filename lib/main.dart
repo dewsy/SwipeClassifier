@@ -47,25 +47,48 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
           if (snapshot.hasData) {
             newDataset = snapshot.data;
-              return Scaffold(
-                appBar: AppBar(
-                  title: Text('${_pageTitle()}'),
-                ),
-                body: Center(child: Text('${_pageTitle()}')),
-                floatingActionButton: FloatingActionButton(
-                  backgroundColor: Colors.orange[200],
-                  foregroundColor: Colors.white,
-                  onPressed: () {
-                    getNewDateset();
-                  },
-                  tooltip: 'Pick Image',
-                  child: Icon(Icons.photo_library),
-                ),
-              );
+            return Scaffold(
+              appBar: AppBar(
+                title: Text('${_pageTitle()}'),
+              ),
+              body: _cardSwipes(),
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: Colors.orange[200],
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  getNewDateset();
+                },
+                tooltip: 'Pick Image',
+                child: Icon(Icons.photo_library),
+              ),
+            );
           } else {
             return CircularProgressIndicator();
           }
         });
+  }
+
+  Widget _cardSwipes() {
+    return Center(
+      child: Draggable(
+        axis: Axis.horizontal,
+        child: Image.file(
+          newDataset.images[0],
+          height: 400,
+          width: 400,
+        ),
+        feedback: Image.file(
+          newDataset.images[0],
+          height: 400,
+          width: 400,
+        ),
+        childWhenDragging: Image.file(
+          newDataset.images[1],
+          height: 400,
+          width: 400,
+        ),
+      ),
+    );
   }
 
   String _pageTitle() {

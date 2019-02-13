@@ -43,7 +43,7 @@ Future<Dataset> loadDatasetFromStorage(String name) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String latestName = prefs.getString('activeDataset');
     if (latestName == null) {
-      return null;
+      return Dataset.empty();
     } else {
     return loadDatasetFromStorage(latestName);
     }

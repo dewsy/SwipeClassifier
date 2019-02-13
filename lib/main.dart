@@ -51,7 +51,21 @@ class _MyHomePageState extends State<MyHomePage> {
               appBar: AppBar(
                 title: Text('${_pageTitle()}'),
               ),
-              body: _cardSwipes(),
+              body: Stack(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              color: Colors.red,
+              width: MediaQuery.of(context).size.width / 2,
+            ),
+            Container(
+              color: Colors.blue,
+              width: MediaQuery.of(context).size.width / 2,
+            ),
+          ],),
+          _cardSwipes()
+          ],),
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.orange[200],
                 foregroundColor: Colors.white,
@@ -69,27 +83,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _cardSwipes() {
-    return Center(
+    int currentIndex = 0;
+    return
+    Container(
+      alignment: Alignment.center,
       child: Draggable(
+        //TODO: Implement drag logic
+        onDragCompleted: null,
         axis: Axis.horizontal,
-        child: Image.file(
-          newDataset.images[0],
-          height: 400,
-          width: 400,
-        ),
+          child:Image.file(
+          newDataset.images[currentIndex],
+          height: 500,
+          width: 500,
+          ),
         feedback: Image.file(
-          newDataset.images[0],
-          height: 400,
-          width: 400,
+          newDataset.images[currentIndex],
+          height: 500,
+          width: 500,
         ),
-        childWhenDragging: Image.file(
-          newDataset.images[1],
-          height: 400,
-          width: 400,
-        ),
+        childWhenDragging: Opacity(
+          opacity: 0.5,
+          child:
+        Image.file(
+          newDataset.images[currentIndex + 1],
+          height: 480,
+          width: 480,
+        )),
       ),
-    );
-  }
+      );
+      }
 
   String _pageTitle() {
     try {

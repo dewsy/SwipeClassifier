@@ -144,15 +144,23 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+        Container( child:
         _cardSwipes(),
+        margin: EdgeInsets.only(top: 70),
+        )
       ],
     );
   }
 
   Widget _cardSwipes() {
-    return Container(
+    return 
+    Container(
         alignment: Alignment.center,
-        child: Draggable(
+        child: 
+       
+        Column(
+          children: <Widget> [
+           Draggable(
             axis: Axis.horizontal,
             child: Image.file(
               newDataset.images[currentIndex],
@@ -167,7 +175,11 @@ class _MyHomePageState extends State<MyHomePage> {
             childWhenDragging: Container(
               height: 0,
               width: 0,
-            )));
+            )),
+            Text('${(currentIndex + 1).toString() + " / " + newDataset.images.length.toString()}', style: TextStyle(
+              fontWeight: FontWeight.w700, fontSize: 20
+            ),)
+          ]));
   }
 
   Future<void> _reloadState() async{

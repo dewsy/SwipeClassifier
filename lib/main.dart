@@ -70,8 +70,10 @@ class _MyHomePageState extends State<MyHomePage> {
             newDataset = snapshot.data;
             return Scaffold(
               appBar: AppBar(
-                title: Text('${_pageTitle()}'),
-              ),
+                title: FlatButton(
+                  onPressed: null,
+                  child:Text('${_pageTitle()}'),
+              )),
               body: _checkForAvailableImages(),
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.orange[200],

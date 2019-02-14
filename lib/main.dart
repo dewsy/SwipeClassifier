@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (newDataset.images.isNotEmpty && newDataset.images.length > currentIndex) {
       return _stack();
     }else if (newDataset.images.length  <= currentIndex && newDataset.images.isNotEmpty) {
+      currentIndex = 0;
+      StorageHandler().saveIndex(currentIndex);
       return Center(
           child: Text(
         "All done! Good job!",
@@ -70,10 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
             newDataset = snapshot.data;
             return Scaffold(
               appBar: AppBar(
-                title: FlatButton(
-                  onPressed: null,
-                  child:Text('${_pageTitle()}'),
-              )),
+                title:Text('${_pageTitle()}'),
+              ),
               body: _checkForAvailableImages(),
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.orange[200],

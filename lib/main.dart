@@ -4,7 +4,6 @@ import 'newDatasetPage.dart';
 import 'dataset.dart';
 import 'storageHandler.dart';
 import 'dart:io';
-import 'package:simple_permissions/simple_permissions.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -29,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Dataset newDataset;
-  int currentIndex = 0;
+  int currentIndex;
 
   getNewDateset() async {
     Dataset temporaryDataset = await Navigator.push(
@@ -44,12 +43,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _checkForAvailableImages() {
-    if (newDataset.images.isNotEmpty) {
+    if (newDataset.images.isNotEmpty && newDataset.images.length > currentIndex) {
       return _stack();
+    }else if (newDataset.images.length  <= currentIndex && newDataset.images.isNotEmpty) {
+      currentIndex = 0;
+      StorageHandler().saveIndex(currentIndex);
+      return Center(
+          child: Text(
+        "All done! Good job!",
+        style: TextStyle(fontSize: 20),
+      ));
+
     } else {
-      return Center(child: Text("Add dataset with the button below", style: TextStyle(
-        fontSize: 20
-      ),));
+      return Center(
+          child: Text(
+        "Add dataset with the button below",
+        style: TextStyle(fontSize: 20),
+      ));
     }
   }
 
@@ -62,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             newDataset = snapshot.data;
             return Scaffold(
               appBar: AppBar(
-                title: Text('${_pageTitle()}'),
+                title:Text('${_pageTitle()}'),
               ),
               body: _checkForAvailableImages(),
               floatingActionButton: FloatingActionButton(
@@ -72,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   getNewDateset();
                 },
                 tooltip: 'Pick Image',
-                child: Icon(Icons.photo_library),
+                child: Icon(Icons.photo_library,),
               ),
             );
           } else {
@@ -87,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Row(
           children: <Widget>[
             Container(
-             // color: Colors.red,
+              // color: Colors.red,
               width: MediaQuery.of(context).size.width / 2,
               child: DragTarget(builder: (context, candidate, rejected) {
                 return Container(
@@ -104,13 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 print('Accepted LEFT!');
                 File thisImage = newDataset.images[currentIndex];
                 _fileRenamer(thisImage, newDataset.leftSwipeTag);
-                setState(() {
-                  currentIndex++;
-                });
+                ++currentIndex;
+                _reloadState();
               }),
             ),
             Container(
-             // color: Colors.blue,
+              // color: Colors.blue,
               width: MediaQuery.of(context).size.width / 2,
               child: DragTarget(builder: (context, candidate, rejected) {
                 return Container(
@@ -127,9 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 print('Accepted RIGHT!');
                 File thisImage = newDataset.images[currentIndex];
                 _fileRenamer(thisImage, newDataset.rightSwipeTag);
-                setState(() {
-                  currentIndex++;
-                });
+                ++currentIndex;
+                _reloadState();
+              
+              
               }),
             ),
           ],
@@ -160,35 +170,34 @@ class _MyHomePageState extends State<MyHomePage> {
             )));
   }
 
+  Future<void> _reloadState() async{
+    await StorageHandler().saveIndex(currentIndex).then((i) {
+      setState(() {
+      });
+    });
+  }
+
+  
+
   String _pageTitle() {
-    try {
-      String _name = newDataset.name;
+    String _name = newDataset.name;
+    if (_name.length > 0) {
       return _name;
-    } catch (e) {
-      return 'No dataset selected';
+    } else {
+      return 'Swipe Classifier';
     }
   }
 
   Future<Dataset> _getLatestDataset() async {
+    currentIndex = await StorageHandler().loadIndex();
+    await StorageHandler().getPermission();
     return StorageHandler().loadLatestDataset();
   }
 
-
-_fileRenamer(File file, String tag) async {
-  //TODO: Implement warning for too many dots
-  List<String> splitname = file.path.split(".");
-  bool result =
-      await SimplePermissions.checkPermission(Permission.WriteExternalStorage);
-  if (!result) {
-    PermissionStatus answer = await SimplePermissions.requestPermission(
-        Permission.WriteExternalStorage);
-    if (answer == PermissionStatus.denied) {
-      //TODO: handle rejection
-    } else {
-      file.rename('${splitname[0] + tag + "." + splitname[1]}');
-    }
-  } else {
-    file.rename('${splitname[0] + tag + "." + splitname[1]}');
+  _fileRenamer(File file, String tag) async {
+    //TODO: Implement warning for too many dots
+    List<String> splitname = file.path.split(".");
+    await StorageHandler().getPermission().then(
+        (onValue) => file.rename('${splitname[0] + tag + "." + splitname[1]}'));
   }
-}
 }

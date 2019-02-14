@@ -147,11 +147,11 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             }),
           ));
     } else {
-      return IconButton(
-        icon: Icon(Icons.add_photo_alternate),
+      return Container(margin: EdgeInsets.only(bottom: 30) ,child: IconButton(
+        icon: Icon(Icons.add_photo_alternate, size: 60, color: Colors.grey,),
         tooltip: 'Import images from gallery',
         onPressed: getImage,
-      );
+      ));
     }
   }
 

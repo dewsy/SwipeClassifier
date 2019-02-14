@@ -43,8 +43,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _checkForAvailableImages() {
-    if (newDataset.images.isNotEmpty) {
+    if (newDataset.images.isNotEmpty && newDataset.images.length > currentIndex) {
       return _stack();
+    }else if (newDataset.images.length  <= currentIndex && newDataset.images.isNotEmpty) {
+      return Center(
+          child: Text(
+        "All done! Good job!",
+        style: TextStyle(fontSize: 20),
+      ));
+
     } else {
       return Center(
           child: Text(

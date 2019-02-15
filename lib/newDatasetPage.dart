@@ -48,7 +48,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           Container(
             margin: const EdgeInsets.only(bottom: 10),
             child: TextFormField(
-              decoration: InputDecoration(hintText: "Dateset name"),
+              decoration: InputDecoration(hintText: "Dataset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               onSaved: (input) => newDataset.name = input,
               controller: nameController,

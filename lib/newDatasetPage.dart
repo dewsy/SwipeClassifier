@@ -120,8 +120,8 @@ class _AddNewDatasetState extends State<AddNewDataset> {
         if (_images == null) {
           _showNoImageAlerBox();
         } else {
-        _formKey.currentState.save();
-        Navigator.pop(context, _newDataset);
+          _formKey.currentState.save();
+          Navigator.pop(context, _newDataset);
         }
       }
     }
@@ -129,11 +129,17 @@ class _AddNewDatasetState extends State<AddNewDataset> {
 
   Widget _arePicturesSelectedSwitcher() {
     if (_images == null) {
-      return Container(margin: EdgeInsets.only(bottom: 30) ,child: IconButton(
-        icon: Icon(Icons.add_photo_alternate, size: 60, color: Colors.grey,),
-        tooltip: 'Import images from gallery',
-        onPressed: getImage,
-      )); 
+      return Container(
+          margin: EdgeInsets.only(bottom: 30),
+          child: IconButton(
+            icon: Icon(
+              Icons.add_photo_alternate,
+              size: 60,
+              color: Colors.grey,
+            ),
+            tooltip: 'Import images from gallery',
+            onPressed: getImage,
+          ));
     } else {
       return Container(
           width: 50,
@@ -143,12 +149,10 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             crossAxisCount: 3,
             children: List.generate(_previewCount(), (index) {
               return Container(
-                margin: EdgeInsets.all(5),
-                child:Center(
-                child: Image.file(
-                  _images[index]
-                ),
-              ));
+                  margin: EdgeInsets.all(5),
+                  child: Center(
+                    child: Image.file(_images[index]),
+                  ));
             }),
           ));
     }
@@ -164,7 +168,6 @@ class _AddNewDatasetState extends State<AddNewDataset> {
       _images = images;
     });
   }
-
 
   void _showNoImageAlerBox() {
     showDialog(
@@ -184,5 +187,5 @@ class _AddNewDatasetState extends State<AddNewDataset> {
         );
       },
     );
-}
+  }
 }

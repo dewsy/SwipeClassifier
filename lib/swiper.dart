@@ -12,12 +12,12 @@ class Swiper extends StatefulWidget {
 
   Swiper(this._context, this._currentDataset, this.refresher);
 
-
   @override
-  _SwiperState createState() => _SwiperState(_context, _currentDataset, refresher);
+  _SwiperState createState() =>
+      _SwiperState(_context, _currentDataset, refresher);
 }
 
-  class _SwiperState extends State<Swiper>{
+class _SwiperState extends State<Swiper> {
   BuildContext _context;
   Dataset _currentDataset;
   final Function refresher;
@@ -25,45 +25,46 @@ class Swiper extends StatefulWidget {
   _SwiperState(this._context, this._currentDataset, this.refresher);
 
   @override
-   Widget build(BuildContext _context) {
+  Widget build(BuildContext _context) {
     return Stack(
       children: <Widget>[
-        Row( children: _dropTargets(),),
-        Container( child: _imageDragger(),
-        margin: EdgeInsets.only(top: 70),
+        Row(
+          children: _dropTargets(),
+        ),
+        Container(
+          child: _imageDragger(),
+          margin: EdgeInsets.only(top: 70),
         )
       ],
-    );}
-
-
-  Widget _imageDragger() {
-    return 
-    Container(
-      alignment: Alignment.center,
-      child: Column(
-        children: <Widget> [
-          Draggable(
-          axis: Axis.horizontal,
-          child: Image.file(
-            _currentDataset.images[_currentDataset.counter],
-            height: 500,
-            width: 500,
-          ),
-          feedback: Image.file(
-            _currentDataset.images[_currentDataset.counter],
-            height: 500,  
-            width: 500,
-          ),
-          childWhenDragging: Container(
-            height: 0,
-            width: 0,
-          )),
-          Text('${(_currentDataset.counter + 1).toString() + " / " + _currentDataset.images.length.toString()}', style: TextStyle(
-            fontWeight: FontWeight.w700, fontSize: 20
-          ),)
-        ]));
+    );
   }
 
+  Widget _imageDragger() {
+    return Container(
+        alignment: Alignment.center,
+        child: Column(children: <Widget>[
+          Draggable(
+              axis: Axis.horizontal,
+              child: Image.file(
+                _currentDataset.images[_currentDataset.counter],
+                height: 500,
+                width: 500,
+              ),
+              feedback: Image.file(
+                _currentDataset.images[_currentDataset.counter],
+                height: 500,
+                width: 500,
+              ),
+              childWhenDragging: Container(
+                height: 0,
+                width: 0,
+              )),
+          Text(
+            '${(_currentDataset.counter + 1).toString() + " / " + _currentDataset.images.length.toString()}',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+          )
+        ]));
+  }
 
   _fileRenamer(File file, String tag) async {
     //TODO: Implement warning for too many dots
@@ -72,14 +73,9 @@ class Swiper extends StatefulWidget {
         (onValue) => file.rename('${splitname[0] + tag + "." + splitname[1]}'));
   }
 
-
   List<Widget> _dropTargets() {
-    return <Widget> [
-      _leftDropTarget(),
-      _rightDropTarget()
-    ];
+    return <Widget>[_leftDropTarget(), _rightDropTarget()];
   }
-
 
   Widget _leftDropTarget() {
     return Container(
@@ -105,7 +101,6 @@ class Swiper extends StatefulWidget {
     );
   }
 
-
   Widget _rightDropTarget() {
     return Container(
       width: MediaQuery.of(_context).size.width / 2,
@@ -126,7 +121,7 @@ class Swiper extends StatefulWidget {
         print('Accepted RIGHT!');
         Globals().incrementCounter();
         widget.refresher();
-      }),);
+      }),
+    );
   }
-
 }

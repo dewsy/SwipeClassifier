@@ -23,39 +23,40 @@ class _MyHomePageState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Globals().getDataset(),
-      builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text("${snapshot.data.name == '' ? 'Swipe Classifier' : snapshot.data.name}"),
-            ),
-            body: _createMainScreen(snapshot),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.orange[200],
-              foregroundColor: Colors.white,
-              onPressed: () {
-                _createNewDateset();
-              },
-              tooltip: 'Pick Image',
-              child: Icon(
-                Icons.photo_library,
+        future: Globals().getDataset(),
+        builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                    "${snapshot.data.name == '' ? 'Swipe Classifier' : snapshot.data.name}"),
               ),
-            ),
-          );
-        } else {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Please grant permission!'),
-            ),
-            body: Container());
-        }
-      });
+              body: _createMainScreen(snapshot),
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: Colors.orange[200],
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  _createNewDateset();
+                },
+                tooltip: 'Pick Image',
+                child: Icon(
+                  Icons.photo_library,
+                ),
+              ),
+            );
+          } else {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('Please grant permission!'),
+                ),
+                body: Container());
+          }
+        });
   }
 
   _createNewDateset() async {
     Dataset temporaryDataset = await Navigator.push(
-      context, MaterialPageRoute(builder: (context) => AddNewDataset()));
+        context, MaterialPageRoute(builder: (context) => AddNewDataset()));
     setState(() {
       if (temporaryDataset != null) {
         Globals().setDataset(temporaryDataset);
@@ -69,7 +70,7 @@ class _MyHomePageState extends State<MyApp> {
       return Swiper(context, dataset, refresher);
     } else if (dataset.images.length <= dataset.counter &&
         dataset.images.isNotEmpty) {
-          StorageHandler().deleteDataset(dataset.name);
+      StorageHandler().deleteDataset(dataset.name);
       return _fullscreenMessage("All done, great job!");
     } else {
       return _fullscreenMessage("Add dataset with the button below");
@@ -87,6 +88,4 @@ class _MyHomePageState extends State<MyApp> {
   refresher() {
     setState(() {});
   }
-
-  
 }

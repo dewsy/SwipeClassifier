@@ -7,11 +7,9 @@ import 'dart:io';
 import 'dataset.dart';
 
 class StorageHandler {
-
-
   Future<Dataset> loadDatasetFromStorage(String name) async {
-   return await SharedPreferences.getInstance().then((onValue) {
-    return Dataset.fromJson(onValue.getString(name));
+    return await SharedPreferences.getInstance().then((onValue) {
+      return Dataset.fromJson(onValue.getString(name));
     });
   }
 
@@ -31,11 +29,11 @@ class StorageHandler {
       'leftSwipeName': dataset.leftSwipeName,
       'leftSwipeTag': dataset.leftSwipeTag,
       'images': jsonifyImages(dataset.images),
-      'counter':dataset.counter
+      'counter': dataset.counter
     };
     await SharedPreferences.getInstance().then((onValue) {
-    onValue.setString(dataset.name, jsonify(_jsonMap));
-    onValue.setString("activeDataset", dataset.name);
+      onValue.setString(dataset.name, jsonify(_jsonMap));
+      onValue.setString("activeDataset", dataset.name);
     });
   }
 
@@ -45,12 +43,12 @@ class StorageHandler {
 
   Future<Dataset> loadLatestDataset() async {
     return await SharedPreferences.getInstance().then((onValue) {
-    String _latestName = onValue.getString('activeDataset');
-    if (_latestName == null) {
-      return Dataset.empty();
-    } else {
-      return loadDatasetFromStorage(_latestName);
-    }
+      String _latestName = onValue.getString('activeDataset');
+      if (_latestName == null) {
+        return Dataset.empty();
+      } else {
+        return loadDatasetFromStorage(_latestName);
+      }
     });
   }
 
@@ -71,9 +69,8 @@ class StorageHandler {
 
   Future<void> deleteDataset(String name) async {
     await SharedPreferences.getInstance().then((onValue) {
-    onValue.remove(name);
-    onValue.remove('activeDataset');
-  });
+      onValue.remove(name);
+      onValue.remove('activeDataset');
+    });
   }
-  
 }

@@ -6,22 +6,24 @@ import 'dart:io';
 import 'package:simple_permissions/simple_permissions.dart';
 
 class StorageHandler {
+
+
   Future<Dataset> loadDatasetFromStorage(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    String jsonString = prefs.getString(name);
-    return Dataset.fromJson(jsonString);
+   return await SharedPreferences.getInstance().then((onValue) {
+    return Dataset.fromJson(onValue.getString(name));
+    });
   }
 
   List<String> jsonifyImages(List<File> images) {
-    List<String> imagesInString = new List<String>();
-    for (File file in images) {
-      imagesInString.add(file.path);
+    List<String> _imagesInString = new List<String>();
+    for (File _file in images) {
+      _imagesInString.add(_file.path);
     }
-    return imagesInString;
+    return _imagesInString;
   }
 
   Future<void> saveDataset(Dataset dataset) async {
-    Map<String, dynamic> jsonMap = {
+    Map<String, dynamic> _jsonMap = {
       'name': dataset.name,
       'rightSwipeName': dataset.rightSwipeName,
       'rightSwipeTag': dataset.rightSwipeTag,
@@ -29,10 +31,10 @@ class StorageHandler {
       'leftSwipeTag': dataset.leftSwipeTag,
       'images': jsonifyImages(dataset.images)
     };
-
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(dataset.name, jsonify(jsonMap));
-    prefs.setString("activeDataset", dataset.name);
+    await SharedPreferences.getInstance().then((onValue) {
+    onValue.setString(dataset.name, jsonify(_jsonMap));
+    onValue.setString("activeDataset", dataset.name);
+    });
   }
 
   String jsonify(Map<String, dynamic> toJson) {
@@ -40,13 +42,14 @@ class StorageHandler {
   }
 
   Future<Dataset> loadLatestDataset() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String latestName = prefs.getString('activeDataset');
-    if (latestName == null) {
+    return await SharedPreferences.getInstance().then((onValue) {
+    String _latestName = onValue.getString('activeDataset');
+    if (_latestName == null) {
       return Dataset.empty();
     } else {
-      return loadDatasetFromStorage(latestName);
+      return loadDatasetFromStorage(_latestName);
     }
+    });
   }
 
   Future<void> saveIndex(int index) async {
@@ -56,7 +59,8 @@ class StorageHandler {
   }
 
   Future<int> loadIndex() async {
-   return await SharedPreferences.getInstance().then((onData) {return _loadAsync(onData);});
+   return await SharedPreferences.getInstance().then((onData) {
+     return _loadAsync(onData);});
 
   }
 

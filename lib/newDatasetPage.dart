@@ -11,13 +11,13 @@ class AddNewDataset extends StatefulWidget {
 
 class _AddNewDatasetState extends State<AddNewDataset> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController rNcontroller = TextEditingController();
-  final TextEditingController rTcontroller = TextEditingController();
-  final TextEditingController lNcontroller = TextEditingController();
-  final TextEditingController lTcontroller = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _rNcontroller = TextEditingController();
+  final TextEditingController _rTcontroller = TextEditingController();
+  final TextEditingController _lNcontroller = TextEditingController();
+  final TextEditingController _lTcontroller = TextEditingController();
 
-  Dataset newDataset = Dataset.empty();
+  Dataset _newDataset = Dataset.empty();
   List<File> _images;
 
   @override
@@ -33,7 +33,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             color: Colors.lightGreenAccent,
             child: ListView(
               padding: const EdgeInsets.all(40.0),
-              children: <Widget>[_buildChild(), _form()],
+              children: <Widget>[_arePicturesSelectedSwitcher(), _form()],
             ),
           ),
         ));
@@ -50,8 +50,8 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             child: TextFormField(
               decoration: InputDecoration(hintText: "Dataset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) => newDataset.name = input,
-              controller: nameController,
+              onSaved: (input) => _newDataset.name = input,
+              controller: _nameController,
             ),
           ),
           Container(
@@ -59,8 +59,8 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             child: TextFormField(
               decoration: InputDecoration(hintText: "Right swipe name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) => newDataset.rightSwipeName = input,
-              controller: rNcontroller,
+              onSaved: (input) => _newDataset.rightSwipeName = input,
+              controller: _rNcontroller,
             ),
           ),
           Container(
@@ -68,8 +68,8 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             child: TextFormField(
               decoration: InputDecoration(hintText: "Right swipe tag"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) => newDataset.rightSwipeTag = input,
-              controller: rTcontroller,
+              onSaved: (input) => _newDataset.rightSwipeTag = input,
+              controller: _rTcontroller,
             ),
           ),
           Container(
@@ -77,8 +77,8 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             child: TextFormField(
               decoration: InputDecoration(hintText: "Left swipe name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) => newDataset.leftSwipeName = input,
-              controller: lNcontroller,
+              onSaved: (input) => _newDataset.leftSwipeName = input,
+              controller: _lNcontroller,
             ),
           ),
           Container(
@@ -87,10 +87,10 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               decoration: InputDecoration(hintText: "Left swipe tag"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               onSaved: (input) {
-                newDataset.leftSwipeTag = input;
-                newDataset.images = _images;
+                _newDataset.leftSwipeTag = input;
+                _newDataset.images = _images;
               },
-              controller: lTcontroller,
+              controller: _lTcontroller,
             ),
           ),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
@@ -117,18 +117,24 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   _submit() {
     if (_formKey.currentState != null) {
       if (_formKey.currentState.validate()) {
-        if (_images.length != null) {
-        _formKey.currentState.save();
-        Navigator.pop(context, newDataset);
+        if (_images == null) {
+          _showNoImageAlerBox();
         } else {
-          //TODO: alert user about no pictures selected
+        _formKey.currentState.save();
+        Navigator.pop(context, _newDataset);
         }
       }
     }
   }
 
-  Widget _buildChild() {
-    if (_images != null) {
+  Widget _arePicturesSelectedSwitcher() {
+    if (_images == null) {
+      return Container(margin: EdgeInsets.only(bottom: 30) ,child: IconButton(
+        icon: Icon(Icons.add_photo_alternate, size: 60, color: Colors.grey,),
+        tooltip: 'Import images from gallery',
+        onPressed: getImage,
+      )); 
+    } else {
       return Container(
           width: 50,
           height: 200,
@@ -138,33 +144,45 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             children: List.generate(_previewCount(), (index) {
               return Container(
                 margin: EdgeInsets.all(5),
-                child:
-              Center(
+                child:Center(
                 child: Image.file(
                   _images[index]
                 ),
               ));
             }),
           ));
-    } else {
-      return Container(margin: EdgeInsets.only(bottom: 30) ,child: IconButton(
-        icon: Icon(Icons.add_photo_alternate, size: 60, color: Colors.grey,),
-        tooltip: 'Import images from gallery',
-        onPressed: getImage,
-      ));
     }
   }
 
   int _previewCount() {
-    int count = _images.length < 9 ? _images.length : 9;
-    return count; 
+    return _images.length < 9 ? _images.length : 9;
   }
 
   getImage() async {
     var images = await MultiMediaPicker.pickImages(source: ImageSource.gallery);
-
     setState(() {
       _images = images;
     });
   }
+
+
+  void _showNoImageAlerBox() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Ooopsie!"),
+          content: new Text("You tried to create a Dataset without pictures"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+}
 }

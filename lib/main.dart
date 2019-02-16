@@ -13,63 +13,23 @@ void main() {
   ));
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MyHomePage();
-  }
-}
-
-class MyHomePage extends StatefulWidget {
+class MyApp extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  Dataset newDataset;
-  int currentIndex;
+class _MyHomePageState extends State<MyApp> {
+  Dataset _currentDataset;
+  int _currentIndex;
 
-  getNewDateset() async {
-    Dataset temporaryDataset = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AddNewDataset()));
-
-    setState(() {
-      if (temporaryDataset != null) {
-        newDataset = temporaryDataset;
-        StorageHandler().saveDataset(newDataset);
-      }
-    });
-  }
-
-  Widget _checkForAvailableImages() {
-    if (newDataset.images.isNotEmpty && newDataset.images.length > currentIndex) {
-      return _stack();
-    }else if (newDataset.images.length  <= currentIndex && newDataset.images.isNotEmpty) {
-      currentIndex = 0;
-      StorageHandler().saveIndex(currentIndex);
-      return Center(
-          child: Text(
-        "All done! Good job!",
-        style: TextStyle(fontSize: 20),
-      ));
-
-    } else {
-      return Center(
-          child: Text(
-        "Add dataset with the button below",
-        style: TextStyle(fontSize: 20),
-      ));
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _getLatestDataset(),
         builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
           if (snapshot.hasData) {
-            newDataset = snapshot.data;
+            _currentDataset = snapshot.data;
             return Scaffold(
               appBar: AppBar(
                 title:Text('${_pageTitle()}'),
@@ -91,6 +51,39 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+
+  getNewDateset() async {
+    Dataset temporaryDataset = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AddNewDataset()));
+
+    setState(() {
+      if (temporaryDataset != null) {
+        _currentDataset = temporaryDataset;
+        StorageHandler().saveDataset(_currentDataset);
+      }});
+  }
+
+
+  Widget _checkForAvailableImages() {
+    if (_currentDataset.images.isNotEmpty && _currentDataset.images.length > _currentIndex) {
+      return _stack();
+    }else if (_currentDataset.images.length  <= _currentIndex && _currentDataset.images.isNotEmpty) {
+      _currentIndex = 0;
+      StorageHandler().saveIndex(_currentIndex);
+      return Center(
+          child: Text(
+        "All done! Good job!",
+        style: TextStyle(fontSize: 20),
+      ));
+    } else {
+      return Center(
+          child: Text(
+        "Add dataset with the button below",
+        style: TextStyle(fontSize: 20),
+      ));}
+  }
+  
+
   Widget _stack() {
     return Stack(
       children: <Widget>[
@@ -104,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   margin: EdgeInsets.only(top: 10, left: 10),
                   alignment: Alignment.topLeft,
                   child: Text(
-                    newDataset.leftSwipeName,
+                    _currentDataset.leftSwipeName,
                     style: TextStyle(fontSize: 30, color: Colors.grey),
                   ),
                 );
@@ -112,9 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 return true;
               }, onAccept: (data) {
                 print('Accepted LEFT!');
-                File thisImage = newDataset.images[currentIndex];
-                _fileRenamer(thisImage, newDataset.leftSwipeTag);
-                ++currentIndex;
+                File thisImage = _currentDataset.images[_currentIndex];
+                _fileRenamer(thisImage, _currentDataset.leftSwipeTag);
+                ++_currentIndex;
                 _reloadState();
               }),
             ),
@@ -126,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   margin: EdgeInsets.only(top: 10, right: 10),
                   alignment: Alignment.topRight,
                   child: Text(
-                    newDataset.rightSwipeName,
+                    _currentDataset.rightSwipeName,
                     style: TextStyle(fontSize: 30, color: Colors.grey),
                   ),
                 );
@@ -134,56 +127,51 @@ class _MyHomePageState extends State<MyHomePage> {
                 return true;
               }, onAccept: (data) {
                 print('Accepted RIGHT!');
-                File thisImage = newDataset.images[currentIndex];
-                _fileRenamer(thisImage, newDataset.rightSwipeTag);
-                ++currentIndex;
+                File thisImage = _currentDataset.images[_currentIndex];
+                _fileRenamer(thisImage, _currentDataset.rightSwipeTag);
+                ++_currentIndex;
                 _reloadState();
-              
-              
-              }),
-            ),
-          ],
-        ),
+              }),),],),
         Container( child:
         _cardSwipes(),
         margin: EdgeInsets.only(top: 70),
         )
       ],
-    );
-  }
+    );}
+
 
   Widget _cardSwipes() {
     return 
     Container(
-        alignment: Alignment.center,
-        child: 
-       
-        Column(
-          children: <Widget> [
-           Draggable(
-            axis: Axis.horizontal,
-            child: Image.file(
-              newDataset.images[currentIndex],
-              height: 500,
-              width: 500,
-            ),
-            feedback: Image.file(
-              newDataset.images[currentIndex],
-              height: 500,
-              width: 500,
-            ),
-            childWhenDragging: Container(
-              height: 0,
-              width: 0,
-            )),
-            Text('${(currentIndex + 1).toString() + " / " + newDataset.images.length.toString()}', style: TextStyle(
-              fontWeight: FontWeight.w700, fontSize: 20
-            ),)
-          ]));
+      alignment: Alignment.center,
+      child: Column(
+        children: <Widget> [
+          Draggable(
+          axis: Axis.horizontal,
+          child: Image.file(
+            _currentDataset.images[_currentIndex],
+            height: 500,
+            width: 500,
+          ),
+          feedback: Image.file(
+            _currentDataset.images[_currentIndex],
+            height: 500,
+            width: 500,
+          ),
+          childWhenDragging: Container(
+            height: 0,
+            width: 0,
+          )),
+          Text('${(_currentIndex + 1).toString() + " / " + _currentDataset.images.length.toString()}', style: TextStyle(
+            fontWeight: FontWeight.w700, fontSize: 20
+          ),)
+        ]));
   }
 
+  
+
   Future<void> _reloadState() async{
-    await StorageHandler().saveIndex(currentIndex).then((i) {
+    await StorageHandler().saveIndex(_currentIndex).then((i) {
       setState(() {
       });
     });
@@ -192,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
 
   String _pageTitle() {
-    String _name = newDataset.name;
+    String _name = _currentDataset.name;
     if (_name.length > 0) {
       return _name;
     } else {
@@ -201,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Dataset> _getLatestDataset() async {
-    currentIndex = await StorageHandler().loadIndex();
+    _currentIndex = await StorageHandler().loadIndex();
     await StorageHandler().getPermission();
     return StorageHandler().loadLatestDataset();
   }

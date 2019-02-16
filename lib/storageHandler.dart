@@ -30,7 +30,8 @@ class StorageHandler {
       'rightSwipeTag': dataset.rightSwipeTag,
       'leftSwipeName': dataset.leftSwipeName,
       'leftSwipeTag': dataset.leftSwipeTag,
-      'images': jsonifyImages(dataset.images)
+      'images': jsonifyImages(dataset.images),
+      'counter':dataset.counter
     };
     await SharedPreferences.getInstance().then((onValue) {
     onValue.setString(dataset.name, jsonify(_jsonMap));
@@ -53,27 +54,6 @@ class StorageHandler {
     });
   }
 
-  Future<void> saveIndex(int index) async {
-    await SharedPreferences.getInstance().then((i) {
-      i.setInt('index', index);
-    });
-  }
-
-  Future<int> loadIndex() async {
-   return await SharedPreferences.getInstance().then((onData) {
-     return _loadAsync(onData);});
-
-  }
-
-  int _loadAsync(SharedPreferences pref) {
-   int index = pref.getInt('index');
-       if (index == null) {
-      return 0;
-    } else {
-      return index;
-    }
-  }
-
   Future<void> getPermission() async {
     await SimplePermissions.checkPermission(Permission.WriteExternalStorage)
         .then((onValue) async {
@@ -87,6 +67,13 @@ class StorageHandler {
         });
       }
     });
+  }
+
+  Future<void> deleteDataset(String name) async {
+    await SharedPreferences.getInstance().then((onValue) {
+    onValue.remove(name);
+    onValue.remove('activeDataset');
+  });
   }
   
 }

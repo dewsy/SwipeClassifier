@@ -9,6 +9,7 @@ class Dataset {
   String leftSwipeName;
   String leftSwipeTag;
   List<File> images;
+  int counter;
 
 
   Dataset(this.name, this.rightSwipeName, this.rightSwipeTag, this.leftSwipeName, this.leftSwipeTag, this.images);
@@ -21,11 +22,13 @@ class Dataset {
     this.leftSwipeName = '';
     this.leftSwipeTag = '';
     this.images = List<File>();
+    this.counter = 0;
   }
 
 
   Dataset.fromJson(String jsonString) {
     Map<String, dynamic> json = jsonDecode(jsonString);
+    this.counter = json['counter'];
     this.name = json['name'];
     this.rightSwipeName = json['rightSwipeName'];
     this.rightSwipeTag = json['rightSwipeTag'];

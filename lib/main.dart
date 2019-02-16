@@ -69,16 +69,17 @@ class _MyHomePageState extends State<MyApp> {
 
   Widget _checkForAvailableImages() {
     if (_currentDataset.images.isNotEmpty && _currentDataset.images.length > _currentIndex) {
+      //TODO: from _stack(), extract to swiper.dart for readability
       return _stack();
     }else if (_currentDataset.images.length  <= _currentIndex && _currentDataset.images.isNotEmpty) {
       _currentIndex = 0;
       StorageHandler().saveIndex(_currentIndex);
-      return _fullscreenMessages("All done, great job!");
+      return _fullscreenMessage("All done, great job!");
     } else {
-      return _fullscreenMessages("Add dataset with the button below");}
+      return _fullscreenMessage("Add dataset with the button below");}
   }
 
-  Widget _fullscreenMessages(String message) {
+  Widget _fullscreenMessage(String message) {
     return Center(
       child: Text(
       "$message",

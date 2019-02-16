@@ -46,8 +46,12 @@ class _MyHomePageState extends State<MyApp> {
               ),
             );
           } else {
-            return CircularProgressIndicator();
-          }
+           return Scaffold(
+              appBar: AppBar(
+                title:Text('Please grant permission!'),
+              ),
+              body: Container(
+            ));}
         });
   }
 

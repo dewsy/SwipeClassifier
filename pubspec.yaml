@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: 0.5.0
   multi_media_picker: ^0.1.2
   simple_permissions: 0.1.9
+  swipedetector: 1.2.0
   flutter:
     sdk: flutter
 

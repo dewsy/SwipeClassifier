@@ -7,7 +7,7 @@ import 'globals.dart';
 
 class Swiper extends StatefulWidget {
   final BuildContext _context;
-  Dataset _currentDataset;
+  final Dataset _currentDataset;
   final Function refresher;
 
   Swiper(this._context, this._currentDataset, this.refresher);
@@ -41,24 +41,24 @@ class _SwiperState extends State<Swiper> {
 
   Widget _imageDragger() {
     return Container(
-        alignment: Alignment.center,
-        child: Column(children: <Widget>[
-          Draggable(
-              axis: Axis.horizontal,
-              child: Image.file(
-                _currentDataset.images[_currentDataset.counter],
-                height: 500,
-                width: 500,
-              ),
-              feedback: Image.file(
-                _currentDataset.images[_currentDataset.counter],
-                height: 500,
-                width: 500,
-              ),
-              childWhenDragging: Container(
-                height: 0,
-                width: 0,
-              )),
+      alignment: Alignment.center,
+      child: Column(children: <Widget>[
+        Draggable(
+          axis: Axis.horizontal,
+          child: Image.file(
+            _currentDataset.images[_currentDataset.counter],
+            height: 500,
+            width: 500,
+          ),
+          feedback: Image.file(
+            _currentDataset.images[_currentDataset.counter],
+            height: 500,
+            width: 500,
+          ),
+          childWhenDragging: Container(
+            height: 0,
+            width: 0,
+          )),
           Text(
             '${(_currentDataset.counter + 1).toString() + " / " + _currentDataset.images.length.toString()}',
             style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),

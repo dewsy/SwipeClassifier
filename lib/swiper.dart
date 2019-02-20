@@ -1,66 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:swipedetector/swipedetector.dart';
 import 'dart:io';
+import 'package:file_utils/file_utils.dart';
+import 'package:path/path.dart' as p;
 
 import 'storageHandler.dart';
 import 'dataset.dart';
-import 'globals.dart';
 
 class Swiper extends StatefulWidget {
-  final BuildContext _context;
   final Dataset _currentDataset;
   final Function refresher;
 
-  Swiper(this._context, this._currentDataset, this.refresher);
+  Swiper(this._currentDataset, this.refresher);
 
   @override
-  _SwiperState createState() =>
-      _SwiperState(_context, _currentDataset, refresher);
+  _SwiperState createState() => _SwiperState(_currentDataset, refresher);
 }
 
 class _SwiperState extends State<Swiper> {
-  BuildContext _context;
   Dataset _currentDataset;
   final Function refresher;
 
-  _SwiperState(this._context, this._currentDataset, this.refresher);
+  _SwiperState(this._currentDataset, this.refresher);
 
   @override
-  Widget build(BuildContext _context) {
+  Widget build(BuildContext context) {
+    File _image = _getCurrentImage(_currentDataset.directory);
     return SwipeDetector(
-      onSwipeRight: () {
-        _fileRenamer(_currentDataset.images[_currentDataset.counter],
-            _currentDataset.rightSwipeTag);
-        Globals().incrementCounter();
-        print("Acceted RIGHT!");
-        refresher();
-      },
-      onSwipeLeft: () {
-        _fileRenamer(_currentDataset.images[_currentDataset.counter],
-            _currentDataset.leftSwipeTag);
-        Globals().incrementCounter();
-        print("Accepted LEFT!");
-        refresher();
-      },
-      child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children:  <Widget>[
-        Center( child:Image.file(
-        _currentDataset.images[_currentDataset.counter],
-        height: 500,
-        width: 500,
-      )),
-      Center(
-        child: Text(
-          "${(_currentDataset.counter + 1).toString() + '/' + _currentDataset.images.length.toString()}"),
-      )
-      ]));
+        onSwipeRight: () {
+          moveToSubdir(_image, _currentDataset.rightSwipeName);
+        },
+        onSwipeLeft: () {
+          moveToSubdir(_image, _currentDataset.leftSwipeName);
+        },
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                  child: Image.file(
+                _image,
+                height: 500,
+                width: 500,
+              )),
+              Center(child: Text('${p.basename(_image.path)}'))
+            ]));
   }
 
-  _fileRenamer(File file, String tag) async {
-    //TODO: Implement warning for too many dots
-    List<String> splitname = file.path.split(".");
-    await StorageHandler().getPermission().then(
-        (onValue) => file.rename('${splitname[0] + tag + "." + splitname[1]}'));
+  moveToSubdir(File image, String subdirName) {
+    String imageDir = p.dirname(image.path);
+    String subdirPath = '${imageDir + "/" + subdirName}';
+    FileUtils.mkdir([subdirPath]);
+    StorageHandler().getPermission().then((onValue) {
+      image.copySync('${subdirPath + "/" + p.basename(image.path)}');
+      image.deleteSync();
+      widget.refresher();
+    });
+  }
+
+  File _getCurrentImage(String directory) {
+    Directory dir = Directory(directory);
+    List content = dir.listSync(recursive: false, followLinks: false);
+    for (var piece in content) {
+      if (piece is File) {
+        return piece;
+      }
+    }
+    return null;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'newDatasetPage.dart';
 import 'storageHandler.dart';
@@ -23,36 +24,35 @@ class _MyHomePageState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Globals().getDataset(),
-      builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
-        if (snapshot.hasData) {
-          return 
-          Scaffold(
-            appBar: AppBar(
-              title: Text(
-                "${snapshot.data.name == '' ? 'Swipe Classifier' : snapshot.data.name}"),
-            ),
-            body: _createMainScreen(snapshot),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.orange[200],
-              foregroundColor: Colors.white,
-              onPressed: () {
-                _createNewDateset();
-              },
-              tooltip: 'Pick Image',
-              child: Icon(
-                Icons.photo_library,
-              ),
-            ),
-          );
-        } else {
-          return Scaffold(
+        future: Globals().getDataset(),
+        builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
               appBar: AppBar(
-                title: Text('Please grant permission!'),
+                title: Text(
+                    "${snapshot.data.name == '' ? 'Swipe Classifier' : snapshot.data.name}"),
               ),
-              body: Container());
-        }
-      });
+              body: _createMainScreen(snapshot),
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: Colors.orange[200],
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  _createNewDateset();
+                },
+                tooltip: 'Pick Image',
+                child: Icon(
+                  Icons.photo_library,
+                ),
+              ),
+            );
+          } else {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text('Please grant permission!'),
+                ),
+                body: Container());
+          }
+        });
   }
 
   _createNewDateset() async {
@@ -66,11 +66,14 @@ class _MyHomePageState extends State<MyApp> {
   }
 
   Widget _createMainScreen(AsyncSnapshot<Dataset> snapshot) {
+    bool areImages = false;
     Dataset dataset = snapshot.data;
-    if (dataset.images.isNotEmpty && dataset.images.length > dataset.counter) {
-      return Swiper(context, dataset, refresher);
-    } else if (dataset.images.length <= dataset.counter &&
-        dataset.images.isNotEmpty) {
+    if (dataset.directory != '') {
+      areImages = _areImagesLeft(dataset.directory);
+    }
+    if (areImages) {
+      return Swiper(dataset, refresher);
+    } else if (areImages == false && dataset.name != '') {
       StorageHandler().deleteDataset(dataset.name);
       return _fullscreenMessage("All done, great job!");
     } else {
@@ -84,6 +87,16 @@ class _MyHomePageState extends State<MyApp> {
       "$message",
       style: TextStyle(fontSize: 20),
     ));
+  }
+
+  bool _areImagesLeft(String path) {
+    for (FileSystemEntity stuff
+        in Directory(path).listSync(followLinks: false)) {
+      if (stuff is File) {
+        return true;
+      }
+    }
+    return false;
   }
 
   refresher() {

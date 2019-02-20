@@ -1,5 +1,6 @@
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'dart:io';
 
 import 'dataset.dart';
@@ -13,12 +14,10 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _rNcontroller = TextEditingController();
-  final TextEditingController _rTcontroller = TextEditingController();
   final TextEditingController _lNcontroller = TextEditingController();
-  final TextEditingController _lTcontroller = TextEditingController();
 
   Dataset _newDataset = Dataset.empty();
-  List<File> _images;
+  File _image;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +49,10 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             child: TextFormField(
               decoration: InputDecoration(hintText: "Dataset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) => _newDataset.name = input,
+              onSaved: (input) {
+                _newDataset.name = input;
+                _newDataset.directory = p.dirname(_image.path);
+              },
               controller: _nameController,
             ),
           ),
@@ -66,31 +68,10 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           Container(
             margin: const EdgeInsets.only(bottom: 10),
             child: TextFormField(
-              decoration: InputDecoration(hintText: "Right swipe tag"),
-              validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) => _newDataset.rightSwipeTag = input,
-              controller: _rTcontroller,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: TextFormField(
               decoration: InputDecoration(hintText: "Left swipe name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               onSaved: (input) => _newDataset.leftSwipeName = input,
               controller: _lNcontroller,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: TextFormField(
-              decoration: InputDecoration(hintText: "Left swipe tag"),
-              validator: (input) => input.isEmpty ? 'Required field' : null,
-              onSaved: (input) {
-                _newDataset.leftSwipeTag = input;
-                _newDataset.images = _images;
-              },
-              controller: _lTcontroller,
             ),
           ),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
@@ -117,7 +98,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   _submit() {
     if (_formKey.currentState != null) {
       if (_formKey.currentState.validate()) {
-        if (_images == null) {
+        if (_image == null) {
           _showNoImageAlerBox();
         } else {
           _formKey.currentState.save();
@@ -128,7 +109,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   }
 
   Widget _arePicturesSelectedSwitcher() {
-    if (_images == null) {
+    if (_image == null) {
       return Container(
           margin: EdgeInsets.only(bottom: 30),
           child: IconButton(
@@ -137,7 +118,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               size: 60,
               color: Colors.grey,
             ),
-            tooltip: 'Import images from gallery',
+            tooltip: 'Import image from gallery',
             onPressed: getImage,
           ));
     } else {
@@ -145,27 +126,16 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           width: 50,
           height: 200,
           margin: EdgeInsets.only(bottom: 10),
-          child: GridView.count(
-            crossAxisCount: 3,
-            children: List.generate(_previewCount(), (index) {
-              return Container(
-                  margin: EdgeInsets.all(5),
-                  child: Center(
-                    child: Image.file(_images[index]),
-                  ));
-            }),
+          child: Center(
+            child: Image.file(_image),
           ));
     }
-  }
-
-  int _previewCount() {
-    return _images.length < 9 ? _images.length : 9;
   }
 
   getImage() async {
     var images = await MultiMediaPicker.pickImages(source: ImageSource.gallery);
     setState(() {
-      _images = images;
+      _image = images[0];
     });
   }
 
@@ -188,4 +158,5 @@ class _AddNewDatasetState extends State<AddNewDataset> {
       },
     );
   }
+
 }

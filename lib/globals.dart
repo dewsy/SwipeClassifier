@@ -19,15 +19,6 @@ class Globals {
     return _dataset;
   }
 
-  int getCounter() {
-    return _dataset.counter;
-  }
-
-  incrementCounter() {
-    _dataset.counter++;
-    setDataset(_dataset);
-  }
-
   setDataset(Dataset dataset) {
     _dataset = dataset;
     StorageHandler().saveDataset(_dataset);

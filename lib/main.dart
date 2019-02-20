@@ -26,7 +26,8 @@ class _MyHomePageState extends State<MyApp> {
       future: Globals().getDataset(),
       builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
         if (snapshot.hasData) {
-          return Scaffold(
+          return 
+          Scaffold(
             appBar: AppBar(
               title: Text(
                 "${snapshot.data.name == '' ? 'Swipe Classifier' : snapshot.data.name}"),

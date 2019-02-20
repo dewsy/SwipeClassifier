@@ -18,6 +18,7 @@ class Swiper extends StatefulWidget {
 }
 
 class _SwiperState extends State<Swiper> {
+  int counter;
   Dataset _currentDataset;
   final Function refresher;
 
@@ -42,7 +43,7 @@ class _SwiperState extends State<Swiper> {
                 height: 500,
                 width: 500,
               )),
-              Center(child: Text('${p.basename(_image.path)}'))
+              Center(child: Text('${counter.toString() +" images left"}'))
             ]));
   }
 
@@ -51,7 +52,7 @@ class _SwiperState extends State<Swiper> {
     String subdirPath = '${imageDir + "/" + subdirName}';
     FileUtils.mkdir([subdirPath]);
     StorageHandler().getPermission().then((onValue) {
-      image.copySync('${subdirPath + "/" + p.basename(image.path)}');
+      image.copySync('${"~" + subdirPath + "/" + p.basename(image.path)}');
       image.deleteSync();
       widget.refresher();
     });
@@ -60,6 +61,7 @@ class _SwiperState extends State<Swiper> {
   File _getCurrentImage(String directory) {
     Directory dir = Directory(directory);
     List content = dir.listSync(recursive: false, followLinks: false);
+    counter = content.length - 2;
     for (var piece in content) {
       if (piece is File) {
         return piece;

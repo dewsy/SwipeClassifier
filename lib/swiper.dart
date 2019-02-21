@@ -18,7 +18,6 @@ class Swiper extends StatefulWidget {
 }
 
 class _SwiperState extends State<Swiper> {
-  int counter;
   Dataset _currentDataset;
   final Function refresher;
 
@@ -26,25 +25,30 @@ class _SwiperState extends State<Swiper> {
 
   @override
   Widget build(BuildContext context) {
-    File _image = _getCurrentImage(_currentDataset.directory);
-    return SwipeDetector(
-        onSwipeRight: () {
-          moveToSubdir(_image, _currentDataset.rightSwipeName);
-        },
-        onSwipeLeft: () {
-          moveToSubdir(_image, _currentDataset.leftSwipeName);
-        },
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Center(
-                  child: Image.file(
-                _image,
-                height: 500,
-                width: 500,
-              )),
-              Center(child: Text('${counter.toString() +" images left"}'))
-            ]));
+    return FutureBuilder(
+        future: _getFirstImage(_currentDataset.directory),
+        builder: (BuildContext context, AsyncSnapshot<FileSystemEntity> image) {
+          if (image.hasData) {
+            return SwipeDetector(
+                onSwipeRight: () {
+                  moveToSubdir(image.data, _currentDataset.rightSwipeName);
+                },
+                onSwipeLeft: () {
+                  moveToSubdir(image.data, _currentDataset.leftSwipeName);
+                },
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Center(
+                          child: Image.file(
+                        image.data,
+                        height: 500,
+                        width: 500,
+                      )),
+                      Center(child: Text('${image.data.path}'))
+                    ]));
+          }
+        });
   }
 
   moveToSubdir(File image, String subdirName) {
@@ -52,21 +56,15 @@ class _SwiperState extends State<Swiper> {
     String subdirPath = '${imageDir + "/" + subdirName}';
     FileUtils.mkdir([subdirPath]);
     StorageHandler().getPermission().then((onValue) {
-      image.copySync('${"~" + subdirPath + "/" + p.basename(image.path)}');
+      image.copySync('${subdirPath + "/" + p.basename(image.path)}');
       image.deleteSync();
       widget.refresher();
     });
   }
 
-  File _getCurrentImage(String directory) {
-    Directory dir = Directory(directory);
-    List content = dir.listSync(recursive: false, followLinks: false);
-    counter = content.length - 2;
-    for (var piece in content) {
-      if (piece is File) {
-        return piece;
-      }
-    }
-    return null;
+  Future<FileSystemEntity> _getFirstImage(String path) async {
+    Stream<FileSystemEntity> entityStream =
+        Directory(path).list(followLinks: false);
+    return entityStream.firstWhere((test) => test is File);
   }
 }

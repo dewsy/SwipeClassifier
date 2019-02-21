@@ -66,19 +66,19 @@ class _MyHomePageState extends State<MyApp> {
   }
 
   Widget _createMainScreen(AsyncSnapshot<Dataset> snapshot) {
-    bool areImages = false;
     Dataset dataset = snapshot.data;
-    if (dataset.directory != '') {
-      areImages = _areImagesLeft(dataset.directory);
-    }
-    if (areImages) {
-      return Swiper(dataset, refresher);
-    } else if (areImages == false && dataset.name != '') {
-      StorageHandler().deleteDataset(dataset.name);
-      return _fullscreenMessage("All done, great job!");
-    } else {
-      return _fullscreenMessage("Add dataset with the button below");
-    }
+    return FutureBuilder(
+        future: _getFirstImage(dataset.directory),
+        builder: (BuildContext context, AsyncSnapshot<FileSystemEntity> image) {
+          if (image.hasData) {
+            return Swiper(dataset, refresher);
+          } else if (image.data == null && dataset.name != '') {
+            StorageHandler().deleteDataset(dataset.name);
+            return _fullscreenMessage("All done, great job!");
+          } else {
+            return _fullscreenMessage("Add dataset with the button below");
+          }
+        });
   }
 
   Widget _fullscreenMessage(String message) {
@@ -89,14 +89,10 @@ class _MyHomePageState extends State<MyApp> {
     ));
   }
 
-  bool _areImagesLeft(String path) {
-    for (FileSystemEntity stuff
-        in Directory(path).listSync(followLinks: false)) {
-      if (stuff is File) {
-        return true;
-      }
-    }
-    return false;
+  Future<FileSystemEntity> _getFirstImage(String path) async {
+    Stream<FileSystemEntity> entityStream =
+        Directory(path).list(followLinks: false);
+    return entityStream.firstWhere((test) => test is File);
   }
 
   refresher() {

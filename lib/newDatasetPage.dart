@@ -31,11 +31,43 @@ class _AddNewDatasetState extends State<AddNewDataset> {
             axisDirection: AxisDirection.down,
             color: Colors.lightGreenAccent,
             child: ListView(
-              padding: const EdgeInsets.all(40.0),
-              children: <Widget>[_arePicturesSelectedSwitcher(), _form()],
+              children: <Widget>
+              [_formPadding(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+            GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Padding(
+                    padding: EdgeInsets.only(right: 100
+                    ),
+                    child: Text(
+                      'X Cancel',
+                      style: TextStyle(color: Colors.redAccent),
+                    ))),
+            Padding(
+              padding: EdgeInsets.only(right: 30),
+              child: RaisedButton(
+              color: Colors.orange[200],
+              textColor: Colors.white,
+              onPressed: _submit,
+              child: Text('Create Dataset'),
+            ),),
+          ]),],
             ),
           ),
         ));
+  }
+
+  Widget _formPadding() {
+    return Container(
+      padding: EdgeInsets.all(40),
+      child: Column(
+        children: <Widget>[
+          _arePicturesSelectedSwitcher(),
+              _form()
+        ],
+      ),
+    );
   }
 
   Widget _form() {
@@ -74,22 +106,6 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               controller: _lNcontroller,
             ),
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-            GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Padding(
-                    padding: EdgeInsets.only(right: 150),
-                    child: Text(
-                      'X Cancel',
-                      style: TextStyle(color: Colors.redAccent),
-                    ))),
-            RaisedButton(
-              color: Colors.orange[200],
-              textColor: Colors.white,
-              onPressed: _submit,
-              child: Text('Create Dataset'),
-            ),
-          ]),
         ],
       ),
     );

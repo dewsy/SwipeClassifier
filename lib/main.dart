@@ -69,12 +69,15 @@ class _MyHomePageState extends State<MyApp> {
     Dataset dataset = snapshot.data;
     return FutureBuilder(
         future: _getFirstImage(dataset.directory),
-        builder: (BuildContext context, AsyncSnapshot<FileSystemEntity> image) {
-          if (image.hasData) {
-            return Swiper(dataset, refresher);
-          } else if (image.data == null && dataset.name != '') {
-            StorageHandler().deleteDataset(dataset.name);
-            return _fullscreenMessage("All done, great job!");
+        builder: (BuildContext context,
+            AsyncSnapshot<FileSystemEntity> imageSnapshot) {
+          if (imageSnapshot.hasData) {
+            if (imageSnapshot.data.path != "./init.rc") {
+              return Swiper(dataset, imageSnapshot.data, refresher);
+            } else if (imageSnapshot.data == null && dataset.name != '') {
+              StorageHandler().deleteDataset(dataset.name);
+              return _fullscreenMessage("All done, great job!");
+            }
           } else {
             return _fullscreenMessage("Add dataset with the button below");
           }

@@ -10,45 +10,41 @@ import 'dataset.dart';
 class Swiper extends StatefulWidget {
   final Dataset _currentDataset;
   final Function refresher;
+  final File _image;
 
-  Swiper(this._currentDataset, this.refresher);
+  Swiper(this._currentDataset, this._image, this.refresher);
 
   @override
-  _SwiperState createState() => _SwiperState(_currentDataset, refresher);
+  _SwiperState createState() => _SwiperState(_currentDataset, _image, refresher);
 }
 
 class _SwiperState extends State<Swiper> {
   Dataset _currentDataset;
   final Function refresher;
+  final File _image;
 
-  _SwiperState(this._currentDataset, this.refresher);
+  _SwiperState(this._currentDataset, this._image, this.refresher);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _getFirstImage(_currentDataset.directory),
-        builder: (BuildContext context, AsyncSnapshot<FileSystemEntity> image) {
-          if (image.hasData) {
-            return SwipeDetector(
-                onSwipeRight: () {
-                  moveToSubdir(image.data, _currentDataset.rightSwipeName);
-                },
-                onSwipeLeft: () {
-                  moveToSubdir(image.data, _currentDataset.leftSwipeName);
-                },
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                          child: Image.file(
-                        image.data,
-                        height: 500,
-                        width: 500,
-                      )),
-                      Center(child: Text('${image.data.path}'))
-                    ]));
-          }
-        });
+    return SwipeDetector(
+        onSwipeRight: () {
+          moveToSubdir(_image, _currentDataset.rightSwipeName);
+        },
+        onSwipeLeft: () {
+          moveToSubdir(_image, _currentDataset.leftSwipeName);
+        },
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                  child: Image.file(
+                _image,
+                height: 500,
+                width: 500,
+              )),
+              Center(child: Text('${_image.path}'))
+            ]));
   }
 
   moveToSubdir(File image, String subdirName) {
@@ -60,11 +56,5 @@ class _SwiperState extends State<Swiper> {
       image.deleteSync();
       widget.refresher();
     });
-  }
-
-  Future<FileSystemEntity> _getFirstImage(String path) async {
-    Stream<FileSystemEntity> entityStream =
-        Directory(path).list(followLinks: false);
-    return entityStream.firstWhere((test) => test is File);
   }
 }

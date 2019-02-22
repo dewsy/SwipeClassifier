@@ -139,7 +139,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           ));
     } else {
       return Container(
-          width: 50,
+          width: 200,
           height: 200,
           margin: EdgeInsets.only(bottom: 10),
           child: Center(

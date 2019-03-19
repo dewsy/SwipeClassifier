@@ -32,7 +32,7 @@ class Swiper extends StatelessWidget {
                 height: 500,
                 width: 500,
               )),
-              Center(child: Text('${_image.path}'))
+              Center(child: Text('${p.basename(_image.path)}'))
             ]));
   }
 

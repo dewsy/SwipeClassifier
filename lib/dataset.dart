@@ -1,39 +1,27 @@
 import 'dart:convert';
-import 'dart:io';
 
 class Dataset {
   String name;
   String rightSwipeName;
-  String rightSwipeTag;
   String leftSwipeName;
-  String leftSwipeTag;
-  List<File> images;
-  int counter;
+  String directory;
 
-  Dataset(this.name, this.rightSwipeName, this.rightSwipeTag,
-      this.leftSwipeName, this.leftSwipeTag, this.images);
+  Dataset(this.name, this.rightSwipeName,
+      this.leftSwipeName, this.directory);
 
   Dataset.empty() {
     this.name = '';
     this.rightSwipeName = '';
-    this.rightSwipeTag = '';
     this.leftSwipeName = '';
-    this.leftSwipeTag = '';
-    this.images = List<File>();
-    this.counter = 0;
+    this.directory = '';
   }
 
   Dataset.fromJson(String jsonString) {
     Map<String, dynamic> json = jsonDecode(jsonString);
-    this.counter = json['counter'];
     this.name = json['name'];
     this.rightSwipeName = json['rightSwipeName'];
-    this.rightSwipeTag = json['rightSwipeTag'];
     this.leftSwipeName = json['leftSwipeName'];
-    this.leftSwipeTag = json['leftSwipeTag'];
-    this.images = List<File>();
-    for (String path in json['images']) {
-      this.images.add(new File(path));
+    this.directory = json['directory'];
     }
   }
-}
+

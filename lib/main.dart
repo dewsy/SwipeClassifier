@@ -100,14 +100,14 @@ class _MyHomePageState extends State<MyApp> {
   Future<FileSystemEntity> _getFirstImage(String path) async {
     Stream<FileSystemEntity> entityStream =
         Directory(path).list(followLinks: false);
-    _currentImage = await entityStream.firstWhere((test) => test is File);
-    return _currentImage;
+    FileSystemEntity temp = await entityStream.firstWhere((test) => test is File);
+    _currentImage = temp;
+    return temp;
   }
 
-  refresher() async {
-    FileSystemEntity temporaryImage = await _getFirstImage(_currentDataset.directory);
+  refresher() {
+    _getFirstImage(_currentDataset.directory);
     setState(() {
-      _currentImage = temporaryImage;
     });
   }
 }

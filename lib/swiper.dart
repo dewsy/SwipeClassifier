@@ -7,23 +7,12 @@ import 'package:path/path.dart' as p;
 import 'storageHandler.dart';
 import 'dataset.dart';
 
-class Swiper extends StatefulWidget {
+class Swiper extends StatelessWidget {
   final Dataset _currentDataset;
   final Function refresher;
   final File _image;
 
   Swiper(this._currentDataset, this._image, this.refresher);
-
-  @override
-  _SwiperState createState() => _SwiperState(_currentDataset, _image, refresher);
-}
-
-class _SwiperState extends State<Swiper> {
-  Dataset _currentDataset;
-  final Function refresher;
-  final File _image;
-
-  _SwiperState(this._currentDataset, this._image, this.refresher);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +44,7 @@ class _SwiperState extends State<Swiper> {
       FileUtils.mkdir([subdirPath]);
       image.copySync('${subdirPath + "/" + p.basename(image.path)}');
       image.deleteSync();
-      widget.refresher();
+      refresher();
     });
   }
 }

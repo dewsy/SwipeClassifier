@@ -71,6 +71,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   }
 
   Widget _form() {
+      //String nameSuggestion = _image != null ? p.basename(_image.path) : "";
     return Form(
       key: _formKey,
       autovalidate: false,
@@ -79,6 +80,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           Container(
             margin: const EdgeInsets.only(bottom: 10),
             child: TextFormField(
+              //initialValue: nameSuggestion,
               decoration: InputDecoration(hintText: "Dataset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               onSaved: (input) {

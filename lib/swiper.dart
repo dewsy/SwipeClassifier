@@ -50,8 +50,9 @@ class _SwiperState extends State<Swiper> {
   moveToSubdir(File image, String subdirName) {
     String imageDir = p.dirname(image.path);
     String subdirPath = '${imageDir + "/" + subdirName}';
-    FileUtils.mkdir([subdirPath]);
     StorageHandler().getPermission().then((onValue) {
+      print("Got permission!");
+      FileUtils.mkdir([subdirPath]);
       image.copySync('${subdirPath + "/" + p.basename(image.path)}');
       image.deleteSync();
       widget.refresher();

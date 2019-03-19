@@ -21,12 +21,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyApp> {
+  FileSystemEntity _currentImage;
+  Dataset _currentDataset;
+
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: Globals().getDataset(),
         builder: (BuildContext context, AsyncSnapshot<Dataset> snapshot) {
           if (snapshot.hasData) {
+            _currentDataset = snapshot.data;
             return Scaffold(
               appBar: AppBar(
                 title: Text(
@@ -73,15 +78,15 @@ class _MyHomePageState extends State<MyApp> {
             AsyncSnapshot<FileSystemEntity> imageSnapshot) {
           if (imageSnapshot.hasData) {
             if (imageSnapshot.data.path != "./init.rc") {
-              return Swiper(dataset, imageSnapshot.data, refresher);
+              return Swiper(dataset, _currentImage, refresher);
             } else if (imageSnapshot.data == null && dataset.name != '') {
               StorageHandler().deleteDataset(dataset.name);
               return _fullscreenMessage("All done, great job!");
-            }
+            
           } else {
             return _fullscreenMessage("Add dataset with the button below");
           }
-        });
+        }});
   }
 
   Widget _fullscreenMessage(String message) {
@@ -95,10 +100,14 @@ class _MyHomePageState extends State<MyApp> {
   Future<FileSystemEntity> _getFirstImage(String path) async {
     Stream<FileSystemEntity> entityStream =
         Directory(path).list(followLinks: false);
-    return entityStream.firstWhere((test) => test is File);
+    _currentImage = await entityStream.firstWhere((test) => test is File);
+    return _currentImage;
   }
 
-  refresher() {
-    setState(() {});
+  refresher() async {
+    FileSystemEntity temporaryImage = await _getFirstImage(_currentDataset.directory);
+    setState(() {
+      _currentImage = temporaryImage;
+    });
   }
 }

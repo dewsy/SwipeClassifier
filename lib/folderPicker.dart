@@ -35,8 +35,9 @@ class _PickerState extends State<Picker> {
   }
 
   listBuilder(Directory directory) async {
-     if (storage = null) {
+    if (storage == null) {
       storage = await getExternalStorageDirectory();
+      directory = storage;
     }
     StorageHandler().getPermission();
     int counter = 0;

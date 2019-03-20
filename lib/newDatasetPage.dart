@@ -71,7 +71,9 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   }
 
   Widget _form() {
-      //String nameSuggestion = _image != null ? p.basename(_image.path) : "";
+    if (_directory != null) {
+    _nameController.text = p.basename(_directory.path);
+    }
     return Form(
       key: _formKey,
       autovalidate: false,
@@ -80,12 +82,11 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           Container(
             margin: const EdgeInsets.only(bottom: 10),
             child: TextFormField(
-              //initialValue: nameSuggestion,
               decoration: InputDecoration(hintText: "Dataset name"),
               validator: (input) => input.isEmpty ? 'Required field' : null,
               onSaved: (input) {
                 _newDataset.name = input;
-                _newDataset.directory = p.dirname(_image.path);
+                _newDataset.directory = _directory.path;
               },
               controller: _nameController,
             ),
@@ -137,7 +138,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               color: Colors.grey,
             ),
             tooltip: 'Import image from gallery',
-            onPressed: getFolder(),
+            onPressed: getFolder,
           ));
     } else {
       return Container(
@@ -145,12 +146,12 @@ class _AddNewDatasetState extends State<AddNewDataset> {
           height: 200,
           margin: EdgeInsets.only(bottom: 10),
           child: Center(
-            child: Image.file(_image),
+            child: Text(p.basename(_directory.path)),
           ));
     }
   }
 
-getFolder() async {
+  getFolder() async {
     Directory imagesDirectory = await Navigator.push(
       context, MaterialPageRoute(builder: (context) => Picker()));
     setState(() {

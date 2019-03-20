@@ -1,9 +1,9 @@
-import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io';
 
 import 'dataset.dart';
+import 'folderPicker.dart';
 
 class AddNewDataset extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   final TextEditingController _lNcontroller = TextEditingController();
 
   Dataset _newDataset = Dataset.empty();
-  File _image;
+  Directory _directory;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +116,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   _submit() {
     if (_formKey.currentState != null) {
       if (_formKey.currentState.validate()) {
-        if (_image == null) {
+        if (_directory == null) {
           _showNoImageAlerBox();
         } else {
           _formKey.currentState.save();
@@ -127,7 +127,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
   }
 
   Widget _arePicturesSelectedSwitcher() {
-    if (_image == null) {
+    if (_directory == null) {
       return Container(
           margin: EdgeInsets.only(bottom: 30),
           child: IconButton(
@@ -137,7 +137,7 @@ class _AddNewDatasetState extends State<AddNewDataset> {
               color: Colors.grey,
             ),
             tooltip: 'Import image from gallery',
-            onPressed: getImage,
+            onPressed: getFolder(),
           ));
     } else {
       return Container(
@@ -150,10 +150,11 @@ class _AddNewDatasetState extends State<AddNewDataset> {
     }
   }
 
-  getImage() async {
-    var images = await MultiMediaPicker.pickImages(source: ImageSource.gallery);
+getFolder() async {
+    Directory imagesDirectory = await Navigator.push(
+      context, MaterialPageRoute(builder: (context) => Picker()));
     setState(() {
-      _image = images[0];
+      _directory = imagesDirectory;
     });
   }
 

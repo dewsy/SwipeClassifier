@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'newDatasetPage.dart';
 import 'storageHandler.dart';
@@ -24,7 +25,6 @@ class _MyHomePageState extends State<MyApp> {
   FileSystemEntity _currentImage;
   Dataset _currentDataset;
 
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -37,7 +37,25 @@ class _MyHomePageState extends State<MyApp> {
                 title: Text(
                     "${snapshot.data.name == '' ? 'Swipe Classifier' : snapshot.data.name}"),
               ),
-              body: _createMainScreen(snapshot),
+              body: Stack(
+                children: <Widget>[
+                  _createMainScreen(snapshot),
+                  Positioned(
+                      top: 5,
+                      left: 20,
+                      child: Text(
+                        _currentDataset.leftSwipeName,
+                        style: TextStyle(fontSize: 20),
+                      )),
+                  Positioned(
+                      top: 5,
+                      right: 20,
+                      child: Text(
+                        _currentDataset.rightSwipeName,
+                        style: TextStyle(fontSize: 20),
+                      ))
+                ],
+              ),
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.orange[200],
                 foregroundColor: Colors.white,
@@ -77,16 +95,17 @@ class _MyHomePageState extends State<MyApp> {
         builder: (BuildContext context,
             AsyncSnapshot<FileSystemEntity> imageSnapshot) {
           if (imageSnapshot.hasData) {
-            if (imageSnapshot.data.path != "./init.rc") {
+            if (imageSnapshot.data.path != "null") {
               return Swiper(dataset, _currentImage, refresher);
-            } else if (imageSnapshot.data == null && dataset.name != '') {
+            } else if (imageSnapshot.data.path == "null" &&
+                dataset.name != '') {
               StorageHandler().deleteDataset(dataset.name);
               return _fullscreenMessage("All done, great job!");
-            
-          } else {
-            return _fullscreenMessage("Add dataset with the button below");
+            } else {
+              return _fullscreenMessage("Add dataset with the button below");
+            }
           }
-        }});
+        });
   }
 
   Widget _fullscreenMessage(String message) {
@@ -100,14 +119,16 @@ class _MyHomePageState extends State<MyApp> {
   Future<FileSystemEntity> _getFirstImage(String path) async {
     Stream<FileSystemEntity> entityStream =
         Directory(path).list(followLinks: false);
-    FileSystemEntity temp = await entityStream.firstWhere((test) => test is File);
-    _currentImage = temp;
-    return temp;
-  }
+    FileSystemEntity temp =
+        await entityStream.firstWhere((test) => test is File && p.extension(test.path) == ".jpg" ||
+         p.extension(test.path) == ".jpeg" || p.extension(test.path) == ".png", orElse: () => File("null"));
+        _currentImage = temp;
+        return temp;
+    }
+  
 
   refresher() {
     _getFirstImage(_currentDataset.directory);
-    setState(() {
-    });
+    setState(() {});
   }
 }
